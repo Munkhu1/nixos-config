@@ -15,25 +15,39 @@ let
       hash = "sha256-bzA6WUZrXgQDJvOuK5JIcnPJNRhU/8AiKg3jgAeeoBM="; 
     };
     
-    # Add ImageMagick so Nix can convert the image for us
-    nativeBuildInputs = [ pkgs.imagemagick ];
+    # Added matugen (Material You generator) and jq (JSON parser)
+    nativeBuildInputs =[ pkgs.imagemagick pkgs.matugen pkgs.jq ];
 
     installPhase = ''
       mkdir -p $out/share/sddm/themes/Pixel
       find . -type f -name "*.qml" -exec sed -i 's/QtGraphicalEffects/Qt5Compat.GraphicalEffects/g' {} +
       
-      # 1. Copy the base theme files
       cp -r * $out/share/sddm/themes/Pixel/
 
-      # 2. Fix the white screen: Convert your JPG to a PNG so Qt can natively read it
+      # 1. Convert wallpaper to PNG
       magick ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/my-wallpaper.png
       
-      # 3. Bypass sed completely by creating an SDDM override file
+      # 2. Extract "Material You" colors from the wallpaper
+      matugen image ${./sddm-wall/wallpaper.jpg} -j hex > palette.json
+      
+      # 3. Read the colors we want
+      ACCENT=$(jq -r '.colors.dark.primary' palette.json)
+      SURFACE=$(jq -r '.colors.dark.surface' palette.json)
+      TEXT=$(jq -r '.colors.dark.on_surface' palette.json)
+
+      # 4. Feed them into the SDDM override config
       cat > $out/share/sddm/themes/Pixel/theme.conf.user <<EOF
       [General]
       Background="my-wallpaper.png"
       background="my-wallpaper.png"
+      AccentColor="$ACCENT"
+      PrimaryColor="$ACCENT"
+      BackgroundColor="$SURFACE"
+      TextColor="$TEXT"
       EOF
+
+      # 5. FORCE OVERRIDE (Only uncomment if Step 2 doesn't work! See notes below)
+      # find $out/share/sddm/themes/Pixel/ -type f -name "*.qml" -exec sed -i "s/#REPLACE_ME/$ACCENT/gi" {} +
     '';
   };
 in
