@@ -24,18 +24,23 @@ let
       
       cp -r * $out/share/sddm/themes/Pixel/
 
-      # 1. Convert wallpaper to a clean PNG (this fixes the fake .jpg extension too)
+      # 1. Convert wallpaper to PNG
       magick ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/my-wallpaper.png
       
-      # 2. Extract colors from the newly generated CLEAN PNG, not the original!
-      matugen image $out/share/sddm/themes/Pixel/my-wallpaper.png -j hex > palette.json
+      # 2. Fast-calculate the average dominant color of the image using ImageMagick
+      # (This scales the image to exactly 1 pixel and reads its hex code)
+      DOMINANT_HEX=$(magick ${./sddm-wall/wallpaper.jpg} -scale 1x1\! -format "%[hex:u.p{0,0}]" info:)
       
-      # 3. Read the colors we want
+      # 3. Generate the Material You palette from the hex color directly!
+      # (This completely bypasses the interactive prompt)
+      matugen color hex "#$DOMINANT_HEX" -j hex > palette.json
+      
+      # 4. Read the colors we want
       ACCENT=$(jq -r '.colors.dark.primary' palette.json)
       SURFACE=$(jq -r '.colors.dark.surface' palette.json)
       TEXT=$(jq -r '.colors.dark.on_surface' palette.json)
 
-      # 4. Feed them into the SDDM override config
+      # 5. Feed them into the SDDM override config
       cat > $out/share/sddm/themes/Pixel/theme.conf.user <<EOF
       [General]
       Background="my-wallpaper.png"
@@ -46,7 +51,7 @@ let
       TextColor="$TEXT"
       EOF
 
-      # 5. FORCE OVERRIDE (Only uncomment if Step 2 doesn't work!)
+      # 6. FORCE OVERRIDE (Only uncomment if Step 5 doesn't change the UI colors!)
       # find $out/share/sddm/themes/Pixel/ -type f -name "*.qml" -exec sed -i "s/#REPLACE_ME/$ACCENT/gi" {} +
     '';
   };
