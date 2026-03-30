@@ -24,11 +24,11 @@ let
       
       cp -r * $out/share/sddm/themes/Pixel/
 
-      # 1. Convert wallpaper to PNG
+      # 1. Convert wallpaper to a clean PNG (this fixes the fake .jpg extension too)
       magick ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/my-wallpaper.png
       
-      # 2. Extract "Material You" colors from the wallpaper
-      matugen image ${./sddm-wall/wallpaper.jpg} -j hex > palette.json
+      # 2. Extract colors from the newly generated CLEAN PNG, not the original!
+      matugen image $out/share/sddm/themes/Pixel/my-wallpaper.png -j hex > palette.json
       
       # 3. Read the colors we want
       ACCENT=$(jq -r '.colors.dark.primary' palette.json)
@@ -46,7 +46,7 @@ let
       TextColor="$TEXT"
       EOF
 
-      # 5. FORCE OVERRIDE (Only uncomment if Step 2 doesn't work! See notes below)
+      # 5. FORCE OVERRIDE (Only uncomment if Step 2 doesn't work!)
       # find $out/share/sddm/themes/Pixel/ -type f -name "*.qml" -exec sed -i "s/#REPLACE_ME/$ACCENT/gi" {} +
     '';
   };
