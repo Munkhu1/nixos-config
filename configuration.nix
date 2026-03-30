@@ -14,18 +14,26 @@ let
       rev = "pixel"; 
       hash = "sha256-bzA6WUZrXgQDJvOuK5JIcnPJNRhU/8AiKg3jgAeeoBM="; 
     };
+    
+    # Add ImageMagick so Nix can convert the image for us
+    nativeBuildInputs = [ pkgs.imagemagick ];
+
     installPhase = ''
       mkdir -p $out/share/sddm/themes/Pixel
       find . -type f -name "*.qml" -exec sed -i 's/QtGraphicalEffects/Qt5Compat.GraphicalEffects/g' {} +
       
-      # 1. Copy the base theme files first
+      # 1. Copy the base theme files
       cp -r * $out/share/sddm/themes/Pixel/
 
-      # 2. Inject your custom wallpaper from the subdirectory
-      cp ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/wallpaper.jpg
+      # 2. Fix the white screen: Convert your JPG to a PNG so Qt can natively read it
+      magick ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/my-wallpaper.png
       
-      # 3. Update the SDDM theme.conf (handles spaces, quotes, and upper/lowercase)
-      sed -i -E 's/^[[:space:]]*[bB]ackground[[:space:]]*=.*/Background="wallpaper.jpg"/' $out/share/sddm/themes/Pixel/theme.conf
+      # 3. Bypass sed completely by creating an SDDM override file
+      cat > $out/share/sddm/themes/Pixel/theme.conf.user <<EOF
+      [General]
+      Background="my-wallpaper.png"
+      background="my-wallpaper.png"
+      EOF
     '';
   };
 in
