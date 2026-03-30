@@ -24,8 +24,8 @@ let
       # 2. Inject your custom wallpaper from the subdirectory
       cp ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/wallpaper.jpg
       
-      # 3. Update the SDDM theme.conf to use your new background image
-      sed -i 's/^[bB]ackground=.*/Background=wallpaper.jpg/' $out/share/sddm/themes/Pixel/theme.conf
+      # 3. Update the SDDM theme.conf (handles spaces, quotes, and upper/lowercase)
+      sed -i -E 's/^[[:space:]]*[bB]ackground[[:space:]]*=.*/Background="wallpaper.jpg"/' $out/share/sddm/themes/Pixel/theme.conf
     '';
   };
 in
