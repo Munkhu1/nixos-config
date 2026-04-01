@@ -164,18 +164,46 @@ in
     };
   };
 
+  xdg.portal = {
+      enable = true;
+      extraPortals =[
+        pkgs.xdg-desktop-portal-gnome
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      config = {
+        common = {
+          default = [ "gnome" "gtk" ];
+          "org.freedesktop.impl.portal.FileChooser" = [ "gnome" ];
+        };
+      };
+    };
+
   environment = {
     pathsToLink = [ "/share/icons" ];
     variables.EDITOR = "zeditor";
     sessionVariables.NIXOS_OZONE_WL = "1";
+    sessionVariables.GTK_USE_PORTAL = "1";
 
     systemPackages = with pkgs;[
-      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship
+      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship pkgs.nautilus
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat
       eza tmux capitaine-cursors zed-editor
       pixel-sddm
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
       inputs.zen-browser.packages.${pkgs.system}.default
+
+      # Custom derivation for Pandora
+      (rustPlatform.buildRustPackage {
+        pname = "pandora";
+        version = "git";
+        src = fetchFromGitHub {
+          owner = "PandorasFox";
+          repo = "pandora";
+          rev = "release";
+          hash = "sha256-wuD8SR33bNC82iNujLztNHnwPZMGycp3aW8JDcypU2Y=";
+        };
+        cargoHash = "sha256-+EapLZMTZyAKX0cs24EOwaRJwq8J99H78qHYyVXuLD8=";
+      })
     ];
 
     # Niri Configuration

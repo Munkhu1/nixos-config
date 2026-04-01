@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# When the DMS GUI picker tries to set an image, it runs: swww img /path/to/image.jpg
+if [ "$1" = "img" ]; then
+    # Grab the image path the GUI picker sent
+    IMAGE=$(realpath "$2")
+
+    # Update Pandora's config file (ensure the path matches your pandora file)
+    sed -i -E 's|path ".*"|path "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
+
+    # Restart Pandora silently
+    killall pandora
+    pandora > /dev/null 2>&1 & disown
+
+    # Exit successfully so DMS thinks swww worked and generates the Material colors
+    exit 0
+fi
+
+# If DMS tries to start the swww daemon, just exit successfully and do nothing
+exit 0
