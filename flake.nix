@@ -84,6 +84,7 @@
               # wallpaper script symlink
               home.sessionPath =[ "$HOME/.local/bin" ];
               home.file.".local/bin/swww".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/scripts/swww";
+              home.file.".local/bin/matugen".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/scripts/matugen";
 
               # ====================================================================================
               # LIVE-EDITABLE DOTFILES (Mutable Symlinks straight to /etc/nixos/dotfiles)
