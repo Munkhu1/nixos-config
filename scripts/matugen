@@ -16,19 +16,14 @@ done
 if [[ -n "$IMAGE" ]]; then
     echo "Found image path: $IMAGE" >> /tmp/matugen-wrapper.log
 
-    # Update the Pandora config
     sed -i -E 's|image ".*"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
 
-    # 1. Ask Pandora to shut down cleanly and instantly using its own IPC
     pandora stop-daemon 2>/dev/null
 
-    # 2. Wait a microscopic amount of time for the socket file to vanish naturally
     sleep 0.05
 
-    # 3. Failsafe: sweep up any ghost sockets just in case
     rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
 
-    # 4. Start the new wallpaper instantly!
     pandora > /tmp/pandora-crash.log 2>&1 & disown
 fi
 
