@@ -9,13 +9,18 @@
 {
   "icon_theme": "Zed (Default)",
   "minimap": {
-    "show": "auto"
+    "show": "auto",
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "macOS Classic Dark",
+    "dark": "Transparent Prism",
+  },
+
+  "context": "Workspace",
+  "bindings": {
+    "f5": "workspace::Reload",
   },
 }

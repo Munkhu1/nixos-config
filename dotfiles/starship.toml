@@ -20,7 +20,7 @@ style = 'fg:245'
 # Replace the "❯" symbol in the prompt with "➜"
 [character]                            # The name of the module we are configuring is "character"
 success_symbol = "[ ](bold fg:12)"
-error_symbol = "[ ](bold fg:249)"
+error_symbol = "[ ](bold fg:9)"
 
 # Disable the package module, hiding it from the prompt completely
 [package]
