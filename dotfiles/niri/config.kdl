@@ -270,7 +270,13 @@ layout {
 // See the binds section below for more spawn examples.
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
-spawn-at-startup "dms" "run"
+// spawn-at-startup "dms" "run"
+
+// 1. Launch DMS with the custom PATH so our wrapper script is always active
+spawn-at-startup "sh" "-c" "PATH=$HOME/.local/bin:$PATH dms run"
+
+// 2. Wait 2 seconds for DMS to load, clean up ghost sockets, and launch Pandora ON TOP
+spawn-at-startup "sh" "-c" "sleep 1; rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null; pandora"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"

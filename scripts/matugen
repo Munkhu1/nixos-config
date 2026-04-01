@@ -1,17 +1,35 @@
 #!/usr/bin/env bash
 
-# When DMS tries to generate colors, it runs: matugen image /path/to/image.jpg
-if [ "$1" = "image" ]; then
-    IMAGE=$(realpath "$2")
+echo "$(date): matugen called with $@" >> /tmp/matugen-wrapper.log
 
-    # Update Pandora's config file
+ARGS=("$@")
+IMAGE=""
+
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "image" ]]; then
+        IMAGE=$(realpath "$2")
+        break
+    fi
+    shift
+done
+
+if [[ -n "$IMAGE" ]]; then
+    echo "Found image path: $IMAGE" >> /tmp/matugen-wrapper.log
+
+    # Update the Pandora config
     sed -i -E 's|image ".*"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
 
-    # Restart Pandora silently
-    pkill -INT pandora 2>/dev/null
-    sleep 0.5
-    pandora > /dev/null 2>&1 & disown
+    # 1. Ask Pandora to shut down cleanly and instantly using its own IPC
+    pandora stop-daemon 2>/dev/null
+
+    # 2. Wait a microscopic amount of time for the socket file to vanish naturally
+    sleep 0.05
+
+    # 3. Failsafe: sweep up any ghost sockets just in case
+    rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
+
+    # 4. Start the new wallpaper instantly!
+    pandora > /tmp/pandora-crash.log 2>&1 & disown
 fi
 
-# Finally, execute the REAL system matugen so DMS still gets its theme colors!
-exec /run/current-system/sw/bin/matugen "$@"
+exec /etc/profiles/per-user/niri-dank/bin/matugen "${ARGS[@]}"
