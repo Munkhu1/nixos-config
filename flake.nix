@@ -65,7 +65,7 @@
           # ==========================================
           # USER 1: niri-dank (Dank Material Shell)
           # ==========================================
-          home-manager.users.niri-dank = { pkgs, ... }: {
+          home-manager.users.niri-dank = { config, pkgs, lib, ... }: {
               imports =[ dms.homeModules.dank-material-shell ];
               home.stateVersion = "23.11";
               programs.dank-material-shell.enable = true;
@@ -81,43 +81,17 @@
                 gtk4.theme = null;
               };
 
-              xdg.configFile."starship.toml".source = ./dotfiles/starship.toml;
+              # ====================================================================================
+              # LIVE-EDITABLE DOTFILES (Mutable Symlinks straight to /etc/nixos/dotfiles)
+              # ====================================================================================
 
-              programs.kitty = {
-                enable = true;
-                font = {
-                  name = "JetBrains Mono Nerd Font";
-                  size = 11;
-                };
-                settings = {
-                  # Kept from your original config for Wayland/blur consistency
-                  background_opacity = "0.7";
-                  hide_window_decorations = "yes";
+              xdg.configFile."niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/dotfiles/niri";
+              xdg.configFile."starship.toml".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/dotfiles/starship.toml";
+              xdg.configFile."yazi".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/dotfiles/yazi";
+              xdg.configFile."zed".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/dotfiles/zed";
+              xdg.configFile."kitty".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/dotfiles/kitty";
 
-                  # end4's config
-                  cursor_shape = "beam";
-                  cursor_trail = 1;
-                  window_margin_width = "21.75";
-                  confirm_os_window_close = 0;
-                  shell = "fish";
-                };
-                keybindings = {
-                  "ctrl+c" = "copy_or_interrupt";
-                  "ctrl+f" = "launch --location=hsplit --allow-remote-control kitty +kitten search.py @active-kitty-window-id";
-                  "kitty_mod+f" = "launch --location=hsplit --allow-remote-control kitty +kitten search.py @active-kitty-window-id";
-                  "page_up" = "scroll_page_up";
-                  "page_down" = "scroll_page_down";
-                  "ctrl+plus" = "change_font_size all +1";
-                  "ctrl+equal" = "change_font_size all +1";
-                  "ctrl+kp_add" = "change_font_size all +1";
-                  "ctrl+minus" = "change_font_size all -1";
-                  "ctrl+underscore" = "change_font_size all -1";
-                  "ctrl+kp_subtract" = "change_font_size all -1";
-                  "ctrl+0" = "change_font_size all 0";
-                  "ctrl+kp_0" = "change_font_size all 0";
-                };
-              };
-            };
+          };
 
           # ==========================================
           # USER 2: niri-noctalia (Noctalia Shell)
