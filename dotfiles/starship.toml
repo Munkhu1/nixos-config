@@ -101,3 +101,5 @@ format = '[](bold fg:255)[󰉋 → $path]($style)[](bold fg:255)'
 [cmd_duration]
 min_time = 0
 format = '[](bold fg:252)[󰪢 $duration](bold bg:252 fg:235)[](bold fg:252)'
+
+include "~/.config/1-negro/starship.toml"
