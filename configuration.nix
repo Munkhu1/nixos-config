@@ -192,8 +192,14 @@ in
       inputs.zen-browser.packages.${pkgs.system}.default
 
       (pkgs.writeShellScriptBin "jew" ''
+        if [ "$1" == "nig" ]; then
+            echo "⬇️ Pulling latest changes from GitHub..."
+            sudo git -C /etc/nixos pull
+            shift
+        fi
+
         echo "Baij bailda psda baas shidne shu..."
-        exec nh os switch -- --impure "$@"
+        exec nh os switch /etc/nixos -- --impure "$@"
         '')
 
       # Custom derivation for Pandora
