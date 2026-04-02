@@ -2,7 +2,7 @@
 set -e
 
 # Replace this with your actual GitHub repo URL!
-REPO_URL="https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git"
+REPO_URL="https://github.com/Munkhu1/nixos-config.git"
 
 echo "🚀 Starting Dank-OS Installation..."
 
