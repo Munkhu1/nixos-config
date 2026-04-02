@@ -6,3 +6,9 @@ output "DP-1" {
     position x=0 y=0
 }
 
+output "DP-2" {
+    mode "2560x1440@179.999"
+    scale 1
+    position x=0 y=0
+}
+

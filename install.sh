@@ -13,13 +13,13 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # 2. Back up existing config just in case
-if [ -d "/etc/nixos" ] &&[ ! -d "/etc/nixos/.git" ]; then
+if [ -d "/etc/nixos" ] && [ ! -d "/etc/nixos/.git" ]; then
     echo "📦 Backing up existing /etc/nixos to /etc/nixos.bak..."
     mv /etc/nixos /etc/nixos.bak
 fi
 
 # 3. Clone the repository into /etc/nixos
-if[ ! -d "/etc/nixos/.git" ]; then
+if [ ! -d "/etc/nixos/.git" ]; then
     echo "📥 Cloning repository..."
     # We use nix-shell to ensure git is available even on a fresh install
     nix-shell -p git --run "git clone $REPO_URL /etc/nixos"
@@ -37,5 +37,7 @@ echo "🔨 Building NixOS (this might take a while)..."
 cd /etc/nixos
 # We use --impure so it can read the untracked /etc/nixos/hardware-configuration.nix
 nixos-rebuild switch --flake .#nixos --impure
+
+chown -R niri-dank:users /etc/nixos
 
 echo "✅ Installation complete! Reboot or log out to enter your new system."

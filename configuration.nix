@@ -184,7 +184,7 @@ in
     sessionVariables.GTK_USE_PORTAL = "1";
 
     systemPackages = with pkgs;[
-      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship pkgs.nautilus
+      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat
       eza tmux capitaine-cursors zed-editor
       pixel-sddm
@@ -327,6 +327,7 @@ in
 
   users.users."niri-dank" = {
       isNormalUser = true;
+      initialPassword = "Minecraft172";
       extraGroups =[ "wheel" "main" "video" "audio" "networkmanager" ];
       shell = pkgs.fish;
       packages = with pkgs;[
