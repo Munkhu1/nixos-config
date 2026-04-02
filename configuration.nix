@@ -63,9 +63,9 @@ let
 in
 {
   imports =[
-    ./hardware-configuration.nix
-    inputs.mangowm.nixosModules.mango
-  ];
+      ./hardware-configuration.nix
+      inputs.mangowm.nixosModules.mango
+    ] ++ lib.optional (builtins.pathExists /home/niri-dank/.config/1-negro/nixos-config.nix) /home/niri-dank/.config/1-negro/nixos-config.nix;
 
   # =========================================
   # System Settings (Boot, Network, Time)
@@ -192,6 +192,11 @@ in
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
       inputs.zen-browser.packages.${pkgs.system}.default
 
+      (pkgs.writeShellScriptBin "jew" ''
+        echo "Baij bailda psda baas shidne shu..."
+        exec nh os switch -- --impure "$@"
+        '')
+
       # Custom derivation for Pandora
       (rustPlatform.buildRustPackage {
         pname = "pandora";
@@ -305,6 +310,9 @@ in
 
   systemd.tmpfiles.rules =[
     "d /var/sddm-background 0777 root root -"
+    "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
+    "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs; [\\n    # Custom packages. Jew.\\n    \\n  ];\\n}\\n"
+    "f /home/niri-dank/.config/1-negro/niri-config.kdl 0664 niri-dank main - // Custom niri config. Jew.\\n"
   ];
 
   # =========================================

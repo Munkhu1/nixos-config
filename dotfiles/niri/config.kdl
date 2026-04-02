@@ -272,10 +272,10 @@ layout {
 // This line starts waybar, a commonly used bar for Wayland compositors.
 // spawn-at-startup "dms" "run"
 
-// 1. Launch DMS with the custom PATH so our wrapper script is always active
+spawn-at-startup "sh" "-c" "if [ -x ~/.config/1-negro/local-custom/autostart.sh ]; then ~/.config/1-negro/local-custom/autostart.sh; fi"
+
 spawn-at-startup "sh" "-c" "PATH=$HOME/.local/bin:$PATH dms run"
 
-// 2. Wait 2 seconds for DMS to load, clean up ghost sockets, and launch Pandora ON TOP
 spawn-at-startup "sh" "-c" "sleep 1; rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null; pandora"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
@@ -354,6 +354,12 @@ window-rule {
     clip-to-geometry true
 }
 
+overview {
+  workspace-shadow {
+    off
+  }
+}
+
 spawn-at-startup "easyeffects" "--gapplication-service"
 spawn-at-startup "zen"
 spawn-at-startup "vesktop"
@@ -385,6 +391,7 @@ layer-rule {
 }
 
 // include "~/.config/niri/custom.kdl"
+// include "~/.config/1-negro/niri-.kdl"
 include "/etc/niri/shared-binds.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
