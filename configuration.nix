@@ -63,7 +63,6 @@ let
 in
 {
   imports =[
-      ./hardware-configuration.nix
       inputs.mangowm.nixosModules.mango
     ] ++ lib.optional (builtins.pathExists /home/niri-dank/.config/1-negro/nixos-config.nix) /home/niri-dank/.config/1-negro/nixos-config.nix;
 
