@@ -10,7 +10,7 @@
 
 5. `sudo ./install.sh /dev/[UR SHIT]`
 
-# To Do
+# To-do
 
 - [ ] cachy os
 - [ ] fucking tetrio for munkhochir
