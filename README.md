@@ -24,3 +24,4 @@
 - [ ] grub menu looks dogshit.
 - [ ] lockscreen might not work
 - [ ] diabolical keybind list organize
+- [ ] zeditor config symlink wasn't working? gay.
