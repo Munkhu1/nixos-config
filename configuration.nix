@@ -79,12 +79,16 @@ in
     kernelPackages = pkgs.linuxPackages_latest;
     kernelModules =[ "i2c-dev" "i2c-piix4" "nct6775" ];
     loader = {
-      systemd-boot = {
-        enable = true;
-        configurationLimit = 5;
-      };
+      systemd-boot.enable = false;
       efi.canTouchEfiVariables = true;
-      timeout = 0;
+      efiSysMountPoint = "/boot/efi";
+      timeout = 1;
+      grub = {
+        enable = true;
+        efiSupport = true;
+        device = "nodev";
+        useOSProber = true;
+      };
     };
   };
 

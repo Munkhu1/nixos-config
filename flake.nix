@@ -47,7 +47,7 @@
       specialArgs = { inherit inputs; };
 
       modules =[
-        /etc/nixos/hardware-configuration.nix
+        ./hardware-configuration.nix
         ./configuration.nix
 
         inputs.niri-flake.nixosModules.niri
