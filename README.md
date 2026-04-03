@@ -4,11 +4,13 @@
 
 2. `lsblk` to check which drive/partition to sacrifice to nixos.
 
-3. `curl -O https://raw.githubusercontent.com/Munkhu1/nixos-config/refs/heads/main/install.sh` just do it to give me ur cookies.
+3. `curl -O https://raw.githubusercontent.com/Munkhu1/nixos-config/refs/heads/main/install.sh`
 
 4. `chmod +x install.sh`
 
 5. `sudo ./install.sh /dev/[UR SHIT]`
+
+6. `reboot`
 
 # To-do
 
@@ -27,3 +29,4 @@
 - [ ] zeditor config symlink might not be working? gay.
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] mouse follow scroll fix
+- [ ] special workspace
