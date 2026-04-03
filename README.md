@@ -12,7 +12,7 @@
 
 # To-do
 
-- [ ] cachyos kernel switch to satisfy munkhochir/more fps
+- [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
