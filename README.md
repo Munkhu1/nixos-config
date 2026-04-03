@@ -22,3 +22,4 @@
 - [ ] `jew` possibly aint doing shit.
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
+- [ ] lockscreen might not work
