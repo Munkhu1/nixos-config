@@ -24,7 +24,7 @@ if [ "$#" -eq 1 ]; then
 
   # Check if it's a disk or partition
   TYPE=$(lsblk -nd -o TYPE "$TARGET" 2>/dev/null || true)
-  if[ "$TYPE" == "part" ]; then
+  if [ "$TYPE" == "part" ]; then
     echo "❌ You provided a single PARTITION instead of a whole drive."
     echo "If you want to dual-boot, you must provide TWO partitions: <EFI_PART> and <ROOT_PART>."
     exit 1
