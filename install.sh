@@ -124,8 +124,8 @@ echo "building"
 nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd
 
 echo "permisioh"
-chown -R 1000:main /mnt/etc/nixos
-chmod -R 2775 /mnt/etc/nixos
+nixos-enter --root /mnt -c "chown -R niri-dank:main /etc/nixos"
+nixos-enter --root /mnt -c "chmod -R 2775 /etc/nixos"
 
-echo "✅ Installation complete!"
+echo "bolchloshd damn"
 echo "reboot u BJN"
