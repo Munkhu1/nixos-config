@@ -6,7 +6,7 @@ REPO_URL="https://github.com/Munkhu1/nixos-config.git"
 echo "🚀 Starting Dank-OS Smart Installer..."
 
 # 1. Root & UEFI Checks
-if[ "$EUID" -ne 0 ]; then
+if [ "$EUID" -ne 0 ]; then
   echo "❌ Please run this script with sudo."
   exit 1
 fi
@@ -32,7 +32,7 @@ if [ "$#" -eq 1 ]; then
 
   MODE="DISK"
 
-elif[ "$#" -eq 2 ]; then
+elif [ "$#" -eq 2 ]; then
   EFI_PART=$1
   ROOT_PART=$2
   if[ ! -b "$EFI_PART" ] || [ ! -b "$ROOT_PART" ]; then
@@ -83,7 +83,7 @@ if [ "$MODE" == "DISK" ]; then
   mkfs.fat -F 3 -n boot "$FINAL_EFI"
   mkfs.btrfs -f -L nixos "$FINAL_ROOT"
 
-elif[ "$MODE" == "PARTITION" ]; then
+elif [ "$MODE" == "PARTITION" ]; then
   echo "⚠️  WARNING: THIS WILL ERASE EVERYTHING ON $ROOT_PART! ⚠️"
   echo "ℹ️  Your EFI partition ($EFI_PART) will be used for boot but WILL NOT be erased."
   read -p "Are you absolutely sure? (Type 'YES' to confirm): " confirm
