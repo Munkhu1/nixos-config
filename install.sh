@@ -35,7 +35,7 @@ if [ "$#" -eq 1 ]; then
 elif [ "$#" -eq 2 ]; then
   EFI_PART=$1
   ROOT_PART=$2
-  if[ ! -b "$EFI_PART" ] || [ ! -b "$ROOT_PART" ]; then
+  if [ ! -b "$EFI_PART" ] || [ ! -b "$ROOT_PART" ]; then
     echo "❌ One or both partitions do not exist!"; exit 1;
   fi
   MODE="PARTITION"
