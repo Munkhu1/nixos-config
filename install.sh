@@ -5,7 +5,6 @@ REPO_URL="https://github.com/Munkhu1/nixos-config.git"
 
 echo "🚀 Starting Dank-OS Smart Installer..."
 
-# 1. Root & UEFI Checks
 if [ "$EUID" -ne 0 ]; then
   echo "❌ Please run this script with sudo."
   exit 1
@@ -16,13 +15,11 @@ if [ ! -d "/sys/firmware/efi/efivars" ]; then
   exit 1
 fi
 
-# 2. Determine Mode based on arguments
 MODE=""
 if [ "$#" -eq 1 ]; then
   TARGET=$1
   if [ ! -b "$TARGET" ]; then echo "❌ $TARGET is not a valid block device."; exit 1; fi
 
-  # Check if it's a disk or partition
   TYPE=$(lsblk -nd -o TYPE "$TARGET" 2>/dev/null || true)
   if [ "$TYPE" == "part" ]; then
     echo "❌ You provided a single PARTITION instead of a whole drive."
@@ -55,11 +52,9 @@ else
   exit 1
 fi
 
-# Unmount anything currently active
 umount -R /mnt 2>/dev/null || true
 swapoff -a 2>/dev/null || true
 
-# 3. Execution Block
 if [ "$MODE" == "DISK" ]; then
   echo "⚠️  WARNING: THIS WILL COMPLETELY ERASE EVERYTHING ON $TARGET! ⚠️"
   read -p "Are you absolutely sure? (Type 'YES' to confirm): " confirm
@@ -96,7 +91,6 @@ elif [ "$MODE" == "PARTITION" ]; then
   mkfs.btrfs -f -L nixos "$FINAL_ROOT"
 fi
 
-# 4. Common BTRFS Subvolume & Mounting Logic
 echo "📁 Creating BTRFS subvolumes..."
 mount -t btrfs "$FINAL_ROOT" /mnt
 btrfs subvolume create /mnt/@
@@ -111,7 +105,6 @@ mount -o compress=zstd,subvol=@home "$FINAL_ROOT" /mnt/home
 mount -o compress=zstd,noatime,subvol=@nix "$FINAL_ROOT" /mnt/nix
 mount "$FINAL_EFI" /mnt/boot/efi
 
-# 5. Configuration & NixOS Install
 echo "📥 Cloning your configuration repo..."
 mkdir -p /mnt/etc/nixos
 git clone "$REPO_URL" /mnt/etc/nixos
