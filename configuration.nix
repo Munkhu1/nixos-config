@@ -80,9 +80,13 @@ in
     kernelModules =[ "i2c-dev" "i2c-piix4" "nct6775" ];
     loader = {
       systemd-boot.enable = false;
-      efi.canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot/efi";
-      timeout = 1;
+      timeout = 5;
+
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot/efi";
+      };
+
       grub = {
         enable = true;
         efiSupport = true;
