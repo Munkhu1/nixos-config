@@ -1,1 +1,13 @@
 hardware-configuration.nix
+
+*.backup*
+
+result
+result-*
+
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+.DS_Store
