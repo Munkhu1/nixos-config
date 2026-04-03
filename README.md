@@ -13,13 +13,13 @@
 # To-do
 
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
+- [x] `jew` possibly aint doing shit.
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
 - [ ] pandora wp
 - [ ] nvidia/amd driver shit
 - [ ] permanent external drive mount guide/ish
-- [x] `jew` possibly aint doing shit.
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
 - [ ] lockscreen might not work
