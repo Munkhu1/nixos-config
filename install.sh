@@ -3,7 +3,7 @@ set -e
 
 REPO_URL="https://github.com/Munkhu1/nixos-config.git"
 
-echo "🚀 Starting Dank-OS Smart Installer..."
+echo "nay nigger nay what?"
 
 if [ "$EUID" -ne 0 ]; then
   echo "❌ Please run this script with sudo."
@@ -56,9 +56,9 @@ umount -R /mnt 2>/dev/null || true
 swapoff -a 2>/dev/null || true
 
 if [ "$MODE" == "DISK" ]; then
-  echo "⚠️  WARNING: THIS WILL COMPLETELY ERASE EVERYTHING ON $TARGET! ⚠️"
-  read -p "Are you absolutely sure? (Type 'YES' to confirm): " confirm
-  if [ "$confirm" != "YES" ]; then echo "Aborted."; exit 1; fi
+  echo "Munkhud iim itgelte ymu? itged shadi $TARGET! ⚠️"
+  read -p "you sure lil bro? if so, type BLACK: " confirm
+  if [ "$confirm" != "BLACK" ]; then echo "Aborted."; exit 1; fi
 
   echo "💽 Partitioning $TARGET..."
   wipefs -af "$TARGET"
@@ -74,7 +74,7 @@ if [ "$MODE" == "DISK" ]; then
     FINAL_ROOT="${TARGET}2"
   fi
 
-  echo "🧹 Formatting partitions..."
+  echo "deleting ur shit"
   mkfs.fat -F 32 -n boot "$FINAL_EFI"
   mkfs.btrfs -f -L nixos "$FINAL_ROOT"
 
@@ -87,32 +87,32 @@ elif [ "$MODE" == "PARTITION" ]; then
   FINAL_EFI=$EFI_PART
   FINAL_ROOT=$ROOT_PART
 
-  echo "🧹 Formatting $FINAL_ROOT as BTRFS..."
+  echo "shitting on $FINAL_ROOT till it becomes BTRFS"
   mkfs.btrfs -f -L nixos "$FINAL_ROOT"
 fi
 
-echo "📁 Creating BTRFS subvolumes..."
+echo "making lil childs"
 mount -t btrfs "$FINAL_ROOT" /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@nix
 umount /mnt
 
-echo "🔗 Mounting filesystems..."
+echo "mounting"
 mount -o compress=zstd,subvol=@ "$FINAL_ROOT" /mnt
 mkdir -p /mnt/{home,nix,boot/efi}
 mount -o compress=zstd,subvol=@home "$FINAL_ROOT" /mnt/home
 mount -o compress=zstd,noatime,subvol=@nix "$FINAL_ROOT" /mnt/nix
 mount "$FINAL_EFI" /mnt/boot/efi
 
-echo "📥 Cloning your configuration repo..."
+echo "cloning"
 mkdir -p /mnt/etc/nixos
 git clone "$REPO_URL" /mnt/etc/nixos
 
-echo "⚙️ Generating hardware configuration..."
+echo "generating ur potato config"
 nixos-generate-config --root /mnt
 
-echo "📂 Staging files for Nix Flakes..."
+echo "staging"
 cd /mnt/etc/nixos
 git config --global --add safe.directory /mnt/etc/nixos
 git add -f hardware-configuration.nix
@@ -120,12 +120,12 @@ git config user.name "Dank-OS Installer"
 git config user.email "installer@dank.os"
 git commit -m "chore: local hardware configuration for new machine" || true
 
-echo "🔨 Building NixOS (this will take a while)..."
+echo "building"
 nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd
 
-echo "🔐 Setting group permissions..."
+echo "permisioh"
 chown -R 1000:main /mnt/etc/nixos
 chmod -R 2775 /mnt/etc/nixos
 
 echo "✅ Installation complete!"
-echo "You can now type 'reboot' to boot into your new system."
+echo "reboot u BJN"
