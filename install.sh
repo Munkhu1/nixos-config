@@ -80,7 +80,7 @@ if [ "$MODE" == "DISK" ]; then
   fi
 
   echo "🧹 Formatting partitions..."
-  mkfs.fat -F 3 -n boot "$FINAL_EFI"
+  mkfs.fat -F 32 -n boot "$FINAL_EFI"
   mkfs.btrfs -f -L nixos "$FINAL_ROOT"
 
 elif [ "$MODE" == "PARTITION" ]; then
