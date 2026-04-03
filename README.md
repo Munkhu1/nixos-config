@@ -23,3 +23,4 @@
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
 - [ ] lockscreen might not work
+- [ ] diabolical keybind list organize
