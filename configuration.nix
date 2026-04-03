@@ -71,12 +71,25 @@ in
   # =========================================
   system.stateVersion = "23.11";
 
-  nix.settings.experimental-features =[ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages =[ "openssl-1.1.1w" ];
 
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    substituters =[
+      "https://nix-community.cachix.org"
+      "https://attic.xuyh0120.win/lantian"
+      "https://cache.garnix.io"
+    ];
+    trusted-public-keys =[
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+    ];
+  };
+
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
     kernelModules =[ "i2c-dev" "i2c-piix4" "nct6775" ];
     loader = {
       systemd-boot.enable = false;
@@ -206,7 +219,7 @@ in
 
       (pkgs.writeShellScriptBin "jew" ''
         if [ "$1" == "nig" ]; then
-            echo "⬇️ Pulling latest changes from GitHub..."
+            echo "black jew nigger?"
             sudo git -C /etc/nixos pull
             shift
         fi
@@ -244,7 +257,6 @@ in
               Mod+B { spawn "zen"; }
               Mod+E { spawn "kitty" "-e" "yazi"; }
               Mod+C { spawn "zeditor"; }
-              Mod+Ctrl+Alt+Shift+W { spawn "libreoffice"; }
               Ctrl+Shift+Escape { spawn "kitty" "-e" "btop"; }
               Mod+Ctrl+V { spawn "pavucontrol"; }
 
@@ -297,7 +309,6 @@ in
               Mod+Shift+P { spawn "playerctl" "play-pause"; }
               Mod+Shift+N { spawn "playerctl" "next"; }
               Mod+Shift+B { spawn "playerctl" "previous"; }
-              Mod+Shift+C { spawn "hyprpicker" "-a"; }
               Mod+L       { spawn "loginctl" "lock-session"; }
               Mod+Shift+L { spawn "systemctl" "suspend"; }
 

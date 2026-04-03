@@ -5,12 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     niri-blur = {
-          url = "github:niri-wm/niri/pull/3483/head"; # The WIP blur branch
+          url = "github:niri-wm/niri/pull/3483/head";
           flake = false;
         };
         niri-flake = {
           url = "github:sodiboo/niri-flake";
-          # Override niri-flake's source with our blur fork
           inputs.niri-unstable.follows = "niri-blur";
           inputs.nixpkgs.follows = "nixpkgs";
         };
@@ -39,6 +38,7 @@
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
   outputs = { self, nixpkgs, home-manager, dms, noctalia, ... }@inputs: {
@@ -50,9 +50,15 @@
         ./hardware-configuration.nix
         ./configuration.nix
 
+        {
+          nixpkgs.overlays =[ inputs.nix-cachyos-kernel.overlays.pinned ];
+        }
         inputs.niri-flake.nixosModules.niri
                 ({ pkgs, ... }: {
-                  nixpkgs.overlays =[ inputs.niri-flake.overlays.niri ];
+                  nixpkgs.overlays =[
+                    inputs.niri-flake.overlays.niri
+                    inputs.nix-cachyos-kernel.overlays.pinned
+                  ];
                 })
 
         home-manager.nixosModules.home-manager
@@ -169,7 +175,6 @@
               bind=SUPER,B,spawn,zen
               bind=SUPER,E,spawn,kitty -e yazi
               bind=SUPER,C,spawn,zeditor
-              bind=SUPER+CTRL+ALT+SHIFT,W,spawn,libreoffice
               bind=CTRL+SHIFT,Escape,spawn,kitty -e btop
               bind=SUPER+CTRL,V,spawn,pavucontrol
               bind=SUPER+SHIFT,R,reload_config
@@ -242,7 +247,6 @@
               bind=SUPER+SHIFT,P,spawn,playerctl play-pause
               bind=SUPER+SHIFT,N,spawn,playerctl next
               bind=SUPER+SHIFT,B,spawn,playerctl previous
-              bind=SUPER+SHIFT,C,spawn,hyprpicker -a
               bind=SUPER,L,spawn,loginctl lock-session
               bind=SUPER+SHIFT,L,spawn,systemctl suspend
 

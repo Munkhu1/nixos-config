@@ -7,3 +7,14 @@
 4. `chmod +x install.sh`
 
 5. `sudo ./install.sh /dev/[UR SHIT]`
+
+# To Do
+
+- [ ] cachy os
+- [ ] fucking tetrio for munkhochir
+- [ ] also rog control center
+- [ ] munkhochir's dogshit mic
+- [ ] pandora wp
+- [ ] nvidia/amd driver shit
+- [ ] permanent external drive mount guide/ish
+- [ ] `jew` possibly aint doing shit.
