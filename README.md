@@ -20,3 +20,5 @@
 - [ ] nvidia/amd driver shit
 - [ ] permanent external drive mount guide/ish
 - [ ] `jew` possibly aint doing shit.
+- [ ] sddm customization
+- [ ] grub menu looks dogshit.
