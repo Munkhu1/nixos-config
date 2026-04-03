@@ -26,3 +26,4 @@
 - [ ] diabolical keybind list organize
 - [ ] zeditor config symlink might not be working? gay.
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
+- [ ] mouse follow scroll fix

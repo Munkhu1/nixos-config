@@ -115,10 +115,14 @@ nixos-generate-config --root /mnt
 echo "staging"
 cd /mnt/etc/nixos
 git config --global --add safe.directory /mnt/etc/nixos
+
+git config pull.rebase true
+git config rebase.autoStash true
+
 git add -f hardware-configuration.nix
-git config user.name "Dank-OS Installer"
-git config user.email "installer@dank.os"
-git commit -m "chore: local hardware configuration for new machine" || true
+git config user.name "jew"
+git config user.email "nig@munkhus.org"
+git commit -m "hardware config upload" || true
 
 echo "building"
 nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd

@@ -220,7 +220,7 @@ in
       (pkgs.writeShellScriptBin "jew" ''
         if [ "$1" == "nig" ]; then
             echo "black jew nigger?"
-            sudo git -C /etc/nixos pull
+            sudo git -C /etc/nixos pull --rebase --autostash
             shift
         fi
 
