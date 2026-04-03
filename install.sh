@@ -131,7 +131,7 @@ echo "🔨 Building NixOS (this will take a while)..."
 nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd
 
 echo "🔐 Setting group permissions..."
-chown -R root:main /mnt/etc/nixos
+chown -R 1000:main /mnt/etc/nixos
 chmod -R 2775 /mnt/etc/nixos
 
 echo "✅ Installation complete!"

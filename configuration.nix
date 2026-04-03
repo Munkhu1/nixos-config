@@ -122,7 +122,7 @@ in
   services = {
     xserver = {
       enable = true;
-      videoDrivers = [ "nvidia" ];
+      # videoDrivers = [ "nvidia" ];
     };
     displayManager.sddm = {
       enable = true;
@@ -169,6 +169,11 @@ in
         extraArgs = "--keep-since 7d --keep 3";
       };
     };
+  };
+
+  programs.git = {
+    enable = true;
+    config.safe.directory = "/etc/nixos";
   };
 
   xdg.portal = {
@@ -322,6 +327,8 @@ in
   };
 
   systemd.tmpfiles.rules =[
+    "d /home/niri-dank 0700 niri-dank main - -"
+    "d /home/niri-dank/.config 0755 niri-dank main - -"
     "d /var/sddm-background 0777 root root -"
     "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
     "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs; [\\n    # Custom packages. Jew.\\n    \\n  ];\\n}\\n"
