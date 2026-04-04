@@ -20,7 +20,7 @@ if [[ -n "$IMAGE" ]]; then
 
     ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
 
-    echo "Detected Monitor: $ACTIVE_OUTPUT" >> /tmp/matugen-wrapper.log
+    echo "ur monitor gang: $ACTIVE_OUTPUT" >> /tmp/matugen-wrapper.log
 
     if [[ -n "$ACTIVE_OUTPUT" ]]; then
         sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' ~/.config/pandora/pandora.kdl
