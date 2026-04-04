@@ -16,12 +16,14 @@ done
 if [[ -n "$IMAGE" ]]; then
     echo "Found image path: $IMAGE" >> /tmp/matugen-wrapper.log
 
-    sed -i -E 's|image ".*"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
+    sed -i -E 's|image "[^"]+"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
 
-    ACTIVE_OUTPUT=$(niri msg -j outputs | jq -r 'keys[0]' 2>/dev/null)
+    ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
 
-    if [[ -n "$ACTIVE_OUTPUT" && "$ACTIVE_OUTPUT" != "null" ]]; then
-        sed -i -E 's|output ".*" \{|output "'"$ACTIVE_OUTPUT"'" \{|' ~/.config/pandora/pandora.kdl
+    echo "Detected Monitor: $ACTIVE_OUTPUT" >> /tmp/matugen-wrapper.log
+
+    if [[ -n "$ACTIVE_OUTPUT" ]]; then
+        sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' ~/.config/pandora/pandora.kdl
     fi
 
     pandora stop-daemon 2>/dev/null
