@@ -17,6 +17,7 @@
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [x] mouse follow scroll fix
 - [x] pandora wp
+- [x] zeditor config symlink might not be working? gay.
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
@@ -26,6 +27,5 @@
 - [ ] grub menu looks dogshit.
 - [ ] lockscreen might not work
 - [ ] diabolical keybind list organize
-- [ ] zeditor config symlink might not be working? gay.
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] special workspace
