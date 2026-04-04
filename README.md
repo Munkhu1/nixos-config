@@ -15,7 +15,7 @@
 # To-do
 
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
-- [x] `jew` possibly aint doing shit.
+- [x] mouse follow scroll fix
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
@@ -28,5 +28,4 @@
 - [ ] diabolical keybind list organize
 - [ ] zeditor config symlink might not be working? gay.
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
-- [ ] mouse follow scroll fix
 - [ ] special workspace
