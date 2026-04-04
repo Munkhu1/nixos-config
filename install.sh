@@ -135,10 +135,16 @@ case $GPU_CHOICE in
     INTEL_BUS=$(lspci | awk '/VGA|3D/ && /Intel/ {print $1}' | head -n 1)
     NVIDIA_BUS=$(lspci | awk '/VGA|3D/ && /NVIDIA/ {print $1}' | head -n 1)
 
-    # Bash function to safely convert "00:02.0" to the NixOS "PCI:0:2:0" format
+    # Bash function to safely convert "0000:00:02.0" OR "00:02.0" to "PCI:0:2:0" format
     to_nix_pci() {
-      IFS=':.' read -r bus slot func <<< "$1"
-      printf "PCI:%d:%d:%d" "0x$bus" "0x$slot" "0x$func"
+        IFS=':.' read -ra parts <<< "$1"
+        if [ "${#parts[@]}" -eq 4 ]; then
+        # Handes domain-prefixed format (e.g., 0000:00:02.0)
+        printf "PCI:%d:%d:%d" "0x${parts[1]}" "0x${parts[2]}" "0x${parts[3]}"
+        else
+        # Handles standard format (e.g., 00:02.0)
+        printf "PCI:%d:%d:%d" "0x${parts[0]}" "0x${parts[1]}" "0x${parts[2]}"
+        fi
     }
 
     if [ -z "$INTEL_BUS" ] || [ -z "$NVIDIA_BUS" ]; then
