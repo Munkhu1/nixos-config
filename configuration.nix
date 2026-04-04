@@ -344,6 +344,8 @@ in
     "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
     "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs; [\\n    # Custom packages. Jew.\\n    \\n  ];\\n}\\n"
     "f /home/niri-dank/.config/1-negro/niri-config.kdl 0664 niri-dank main - // Custom niri config. Jew.\\n"
+    "d /home/niri-dank/.config/pandora 0755 niri-dank main - -"
+    "f /home/niri-dank/.config/pandora/pandora.kdl 0664 niri-dank main - output \"*\" {\\n    image \"/home/niri-dank/Pictures/Wallpaper/muntan1.jpg\"\\n    mode \"scroll-vertical\"\\n}\\n\\nanimation {\\n    slowdown 2.0\\n}\\n"
   ];
 
   # =========================================

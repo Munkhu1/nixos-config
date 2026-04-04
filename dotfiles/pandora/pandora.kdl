@@ -1,0 +1,8 @@
+output "*" {
+    image "/home/niri-dank/Pictures/Wallpaper/muntan1.jpg"
+    mode "scroll-vertical"
+}
+
+animation {
+    slowdown 2.0
+}
