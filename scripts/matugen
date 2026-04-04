@@ -18,11 +18,15 @@ if [[ -n "$IMAGE" ]]; then
 
     sed -i -E 's|image ".*"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
 
+    ACTIVE_OUTPUT=$(niri msg -j outputs | jq -r 'keys[0]' 2>/dev/null)
+
+    if [[ -n "$ACTIVE_OUTPUT" && "$ACTIVE_OUTPUT" != "null" ]]; then
+        sed -i -E 's|output ".*" \{|output "'"$ACTIVE_OUTPUT"'" \{|' ~/.config/pandora/pandora.kdl
+    fi
+
     pandora stop-daemon 2>/dev/null
-
     sleep 0.05
-
-    rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
+    bash -c "rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null"
 
     pandora > /tmp/pandora-crash.log 2>&1 & disown
 fi
