@@ -1,5 +1,6 @@
 # Guide
 
+### Installation
 1. `sudo nmtui` to connect to da ethzernet. (ignore if ur connected via eth).
 
 2. `lsblk` to check which drive/partition to sacrifice to nixos.
@@ -12,8 +13,10 @@
 
 6. `reboot`
 
-# To-do
+### Hardware config
+Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which shall be put in 
 
+# To-do
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [x] mouse follow scroll fix
 - [x] pandora wp

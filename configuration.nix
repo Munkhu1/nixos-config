@@ -63,8 +63,9 @@ let
 in
 {
   imports =[
-      inputs.mangowm.nixosModules.mango
-    ] ++ lib.optional (builtins.pathExists /home/niri-dank/.config/1-negro/nixos-config.nix) /home/niri-dank/.config/1-negro/nixos-config.nix;
+        inputs.mangowm.nixosModules.mango
+      ] ++ lib.optional (builtins.pathExists /home/niri-dank/.config/1-negro/nixos-config.nix) /home/niri-dank/.config/1-negro/nixos-config.nix
+        ++ lib.optional (builtins.pathExists ./local-hardware.nix) ./local-hardware.nix;
 
   # =========================================
   # System Settings (Boot, Network, Time)
@@ -120,16 +121,11 @@ in
   # Hardware & Services
   # =========================================
   hardware = {
-    graphics.enable = true;
-    i2c.enable = true;
-    nvidia = {
-      modesetting.enable = true;
-      powerManagement.enable = false;
-      powerManagement.finegrained = false;
-      open = false;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+    graphics = {
+      enable = true;
+      enable32Bit = true;
     };
+    i2c.enable = true;
   };
 
   services = {
@@ -182,6 +178,17 @@ in
         extraArgs = "--keep-since 7d --keep 3";
       };
     };
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
+      gamescopeSession.enable = true; # steam in gamescope
+    };
+    gamemode.enable = true;
+    gamescope = {
+          enable = true;
+          capSysNice = true;
+        };
   };
 
   programs.git = {

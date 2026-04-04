@@ -112,6 +112,59 @@ git clone "$REPO_URL" /mnt/etc/nixos
 echo "generating ur potato config"
 nixos-generate-config --root /mnt
 
+echo "choose ur potato gpu"
+echo "1) AMD Desktop/Laptop"
+echo "2) Nvidia Desktop"
+echo "3) Nvidia Laptop (Intel + Nvidia Optimus)"
+echo "4) None / Virtual Machine"
+read -p "Type 1, 2, 3 or 4: " GPU_CHOICE
+
+LOCAL_HW_CONTENT="{ imports = [ ]; }"
+
+case $GPU_CHOICE in
+  1)
+    LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/amd-desktop.nix ]; }"
+    ;;
+  2)
+    LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-desktop.nix ]; }"
+    ;;
+  3)
+    echo "🔎 Detecting PCI IDs for Optimus..."
+
+    # Extract raw bus IDs from lspci
+    INTEL_BUS=$(lspci | awk '/VGA|3D/ && /Intel/ {print $1}' | head -n 1)
+    NVIDIA_BUS=$(lspci | awk '/VGA|3D/ && /NVIDIA/ {print $1}' | head -n 1)
+
+    # Bash function to safely convert "00:02.0" to the NixOS "PCI:0:2:0" format
+    to_nix_pci() {
+      IFS=':.' read -r bus slot func <<< "$1"
+      printf "PCI:%d:%d:%d" "0x$bus" "0x$slot" "0x$func"
+    }
+
+    if [ -z "$INTEL_BUS" ] || [ -z "$NVIDIA_BUS" ]; then
+      echo "⚠️ Could not auto-detect both Intel and Nvidia GPUs. Falling back to default."
+      LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
+    else
+      INTEL_NIX=$(to_nix_pci "$INTEL_BUS")
+      NVIDIA_NIX=$(to_nix_pci "$NVIDIA_BUS")
+      echo "✅ Found Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
+
+      # Write a fully valid nix configuration injecting the specific IDs
+      LOCAL_HW_CONTENT="{
+  imports = [ ./hardware-profiles/nvidia-laptop-intel.nix ];
+  hardware.nvidia.prime.intelBusId = \"$INTEL_NIX\";
+  hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
+}"
+    fi
+    ;;
+  *)
+    echo "Skipping GPU profile injection..."
+    ;;
+esac
+
+# Write the untracked hardware selection to local-hardware.nix
+echo "$LOCAL_HW_CONTENT" > /mnt/etc/nixos/local-hardware.nix
+
 echo "staging"
 cd /mnt/etc/nixos
 git config --global --add safe.directory /mnt/etc/nixos
@@ -119,7 +172,11 @@ git config --global --add safe.directory /mnt/etc/nixos
 git config pull.rebase true
 git config rebase.autoStash true
 
-git add -f hardware-configuration.nix
+# Force-add the generated hardware files so the Nix flake can see them,
+# bypassing the .gitignore block!
+git add -f hardware-configuration.nix local-hardware.nix
+git add .
+
 git config user.name "jew"
 git config user.email "nig@munkhus.org"
 git commit -m "hardware config upload" || true
