@@ -129,37 +129,55 @@ case $GPU_CHOICE in
     LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-desktop.nix ]; }"
     ;;
   3)
-    echo "🔎 Detecting PCI IDs for Optimus..."
+    echo "🔎 Scanning for GPUs..."
 
-    # Extract raw bus IDs from lspci
-    INTEL_BUS=$(lspci | awk '/VGA|3D/ && /Intel/ {print $1}' | head -n 1)
-    NVIDIA_BUS=$(lspci | awk '/VGA|3D/ && /NVIDIA/ {print $1}' | head -n 1)
+    # Store the detected GPUs in an array
+    mapfile -t GPU_LIST < <(lspci | grep -iE 'VGA|3D')
 
-    # Bash function to safely convert "0000:00:02.0" OR "00:02.0" to "PCI:0:2:0" format
+    if [ ${#GPU_LIST[@]} -eq 0 ]; then
+    echo "⚠️ No GPUs found! Falling back to defaults."
+    LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
+    else
+    echo "--------------------------------------------------------"
+    for i in "${!GPU_LIST[@]}"; do
+        echo "$((i+1))) ${GPU_LIST[$i]}"
+    done
+    echo "--------------------------------------------------------"
+
+    read -p "Enter the NUMBER for the INTEL (iGPU): " igpu_num
+    read -p "Enter the NUMBER for the NVIDIA (dGPU): " dgpu_num
+
+    # Get the raw PCI ID strings (e.g., 0000:00:02.0 or 00:02.0)
+    INTEL_RAW=$(echo "${GPU_LIST[$((igpu_num-1))]}" | awk '{print $1}')
+    NVIDIA_RAW=$(echo "${GPU_LIST[$((dgpu_num-1))]}" | awk '{print $1}')
+
+    # Rock-solid conversion to NixOS format
     to_nix_pci() {
-        IFS=':.' read -ra parts <<< "$1"
-        if [ "${#parts[@]}" -eq 4 ]; then
-        # Handes domain-prefixed format (e.g., 0000:00:02.0)
-        printf "PCI:%d:%d:%d" "0x${parts[1]}" "0x${parts[2]}" "0x${parts[3]}"
-        else
-        # Handles standard format (e.g., 00:02.0)
-        printf "PCI:%d:%d:%d" "0x${parts[0]}" "0x${parts[1]}" "0x${parts[2]}"
+        local pci="$1"
+        # If it has a domain (0000:01:00.0), strip it to get (01:00.0)
+        if [[ "$pci" == *":"*":"* ]]; then
+        pci=$(echo "$pci" | cut -d: -f2,3)
         fi
+
+        # Split BB:DD.F
+        local bus=$(echo "$pci" | cut -d: -f1)
+        local dev=$(echo "$pci" | cut -d: -f2 | cut -d. -f1)
+        local func=$(echo "$pci" | cut -d. -f2)
+
+        # Convert Hex to Decimal natively in Bash
+        printf "PCI:%d:%d:%d" "$((16#$bus))" "$((16#$dev))" "$((16#$func))"
     }
 
-    if [ -z "$INTEL_BUS" ] || [ -z "$NVIDIA_BUS" ]; then
-      echo "⚠️ Could not auto-detect both Intel and Nvidia GPUs. Falling back to default."
-      LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
-    else
-      INTEL_NIX=$(to_nix_pci "$INTEL_BUS")
-      NVIDIA_NIX=$(to_nix_pci "$NVIDIA_BUS")
-      echo "✅ Found Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
+    INTEL_NIX=$(to_nix_pci "$INTEL_RAW")
+    NVIDIA_NIX=$(to_nix_pci "$NVIDIA_RAW")
 
-      # Write a fully valid nix configuration injecting the specific IDs
-      LOCAL_HW_CONTENT="{
-  imports = [ ./hardware-profiles/nvidia-laptop-intel.nix ];
-  hardware.nvidia.prime.intelBusId = \"$INTEL_NIX\";
-  hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
+    echo "✅ Generated Bus IDs -> Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
+
+    # Write a fully valid nix configuration injecting the specific IDs
+    LOCAL_HW_CONTENT="{
+imports = [ ./hardware-profiles/nvidia-laptop-intel.nix ];
+hardware.nvidia.prime.intelBusId = \"$INTEL_NIX\";
+hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
 }"
     fi
     ;;
