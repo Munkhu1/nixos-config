@@ -221,6 +221,7 @@ in
         if [ "$1" == "nig" ]; then
             echo "black jew nigger?"
             sudo git -C /etc/nixos pull --rebase --autostash
+            sudo chown -R niri-dank:main /etc/nixos
             shift
         fi
 
