@@ -20,7 +20,7 @@
   },
 
   "auto_install_extensions": {
-    "transparent-prism-collection": true,
+    "transparent-prism": true,
   },
 
   "context": "Workspace",
