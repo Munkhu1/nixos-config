@@ -1,36 +1,58 @@
 #!/usr/bin/env bash
 
-echo "$(date): matugen called with $@" >> /tmp/matugen-wrapper.log
+echo "=== $(date) ===" >> /tmp/matugen-wrapper.log
+echo "matugen called with: $@" >> /tmp/matugen-wrapper.log
 
 ARGS=("$@")
 IMAGE=""
 
+# 1. Check if an image was passed via arguments
 while [[ $# -gt 0 ]]; do
     if [[ "$1" == "image" ]]; then
         IMAGE=$(realpath "$2")
+        echo "Found image argument: $IMAGE" >> /tmp/matugen-wrapper.log
         break
     fi
     shift
 done
 
-if [[ -n "$IMAGE" ]]; then
-    echo "Found image path: $IMAGE" >> /tmp/matugen-wrapper.log
+# 2. Extract from JSON using built-in grep (no jq needed)
+if [[ -z "$IMAGE" ]]; then
+    SESSION_FILE="$HOME/.local/state/DankMaterialShell/session.json"
+    echo "Checking DMS session file..." >> /tmp/matugen-wrapper.log
 
-    sed -i -E 's|image "[^"]+"|image "'"$IMAGE"'"|' ~/.config/pandora/pandora.kdl
-
-    ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
-
-    echo "ur monitor gang: $ACTIVE_OUTPUT" >> /tmp/matugen-wrapper.log
-
-    if [[ -n "$ACTIVE_OUTPUT" ]]; then
-        sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' ~/.config/pandora/pandora.kdl
+    if [[ -f "$SESSION_FILE" ]]; then
+        IMAGE=$(grep -o '"wallpaperPath": *"[^"]*"' "$SESSION_FILE" | head -n 1 | awk -F'"' '{print $4}')
+        echo "Extracted path from JSON: $IMAGE" >> /tmp/matugen-wrapper.log
+    else
+        echo "Error: Session file not found at $SESSION_FILE" >> /tmp/matugen-wrapper.log
     fi
-
-    pandora stop-daemon 2>/dev/null
-    sleep 0.05
-    bash -c "rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null"
-
-    pandora > /tmp/pandora-crash.log 2>&1 & disown
 fi
 
+# 3. Apply to Pandora if valid
+if [[ -n "$IMAGE" ]]; then
+    if [[ -f "$IMAGE" ]]; then
+        echo "File exists! Updating pandora.kdl..." >> /tmp/matugen-wrapper.log
+
+        sed -i -E 's|image "[^"]+"|image "'"$IMAGE"'"|' "$HOME/.config/pandora/pandora.kdl"
+
+        ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
+        if [[ -n "$ACTIVE_OUTPUT" ]]; then
+            sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' "$HOME/.config/pandora/pandora.kdl"
+        fi
+
+        # Restart Pandora
+        pandora stop-daemon 2>/dev/null
+        sleep 0.05
+        rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
+        pandora > /tmp/pandora-crash.log 2>&1 & disown
+        echo "Pandora restarted successfully." >> /tmp/matugen-wrapper.log
+    else
+        echo "Error: Path extracted ($IMAGE) but file does not exist on disk!" >> /tmp/matugen-wrapper.log
+    fi
+else
+    echo "Error: IMAGE variable is still empty." >> /tmp/matugen-wrapper.log
+fi
+
+# Finally, execute actual Matugen
 exec /etc/profiles/per-user/niri-dank/bin/matugen "${ARGS[@]}"
