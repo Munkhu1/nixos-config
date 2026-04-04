@@ -47,7 +47,9 @@
       specialArgs = { inherit inputs; };
 
       modules =[
-        /etc/nixos/hardware-configuration.nix
+        (if builtins.pathExists /mnt/etc/nixos/hardware-configuration.nix
+          then /mnt/etc/nixos/hardware-configuration.nix
+          else /etc/nixos/hardware-configuration.nix)
         ./configuration.nix
 
         {
