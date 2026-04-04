@@ -29,3 +29,4 @@
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] special workspace
+- [ ] maybe dms config sync 
