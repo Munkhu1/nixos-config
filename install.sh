@@ -125,7 +125,9 @@ git config user.email "nig@munkhus.org"
 git commit -m "hardware config upload" || true
 
 echo "building"
-nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd
+nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd \
+  --option extra-substituters "https://nix-community.cachix.org https://attic.xuyh0120.win/lantian https://cache.garnix.io" \
+  --option extra-trusted-public-keys "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
 
 echo "permisioh"
 nixos-enter --root /mnt -c "chown -R niri-dank:main /etc/nixos"
