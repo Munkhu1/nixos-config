@@ -239,8 +239,6 @@ in
         # stage
         git -C /etc/nixos add .
 
-        echo "Baij bailda psda baas shidne shu..."
-
         # 4. Logic
         if [ "$PUSH_AFTER_BUILD" -eq 1 ]; then
             if nh os switch /etc/nixos -- --impure "$@"; then
@@ -257,6 +255,7 @@ in
             fi
         else
             exec nh os switch /etc/nixos -- --impure "$@"
+            echo "Baij bailda psda baas shidne shu..."
         fi
     '')
 
