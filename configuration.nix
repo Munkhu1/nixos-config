@@ -217,17 +217,48 @@ in
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
       inputs.zen-browser.packages.${pkgs.system}.default
 
+      # alias
+
       (pkgs.writeShellScriptBin "jew" ''
-        if [ "$1" == "nig" ]; then
-            echo "black jew nigger?"
+        # Pull from git
+        if [ "$1" == "down" ]; then
+            echo "WHERE?!?!?"
             sudo git -C /etc/nixos pull --rebase --autostash
             sudo chown -R niri-dank:main /etc/nixos
             shift
         fi
 
+        # up or nah
+        PUSH_AFTER_BUILD=0
+        if [ "$1" == "up" ]; then
+            echo "yes king."
+            PUSH_AFTER_BUILD=1
+            shift
+        fi
+
+        # stage
+        git -C /etc/nixos add .
+
         echo "Baij bailda psda baas shidne shu..."
-        exec nh os switch /etc/nixos -- --impure "$@"
-        '')
+
+        # 4. Logic
+        if [ "$PUSH_AFTER_BUILD" -eq 1 ]; then
+            if nh os switch /etc/nixos -- --impure "$@"; then
+                echo "Build success. Committing & pushing to Git...ni-"
+
+                # Commit
+                git -C /etc/nixos commit -m "eh" || echo "No new changes to commit."
+
+                # Push
+                git -C /etc/nixos push
+            else
+                echo "Build failed gang. Aborting Git push."
+                exit 1
+            fi
+        else
+            exec nh os switch /etc/nixos -- --impure "$@"
+        fi
+    '')
 
       # Custom derivation for Pandora
       (rustPlatform.buildRustPackage {
@@ -343,7 +374,7 @@ in
     "d /home/niri-dank/.config 0755 niri-dank main - -"
     "d /var/sddm-background 0777 root root -"
     "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
-    "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs; [\\n    # Custom packages. Jew.\\n    \\n  ];\\n}\\n"
+    "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs;[\\n    # Custom packages. Jew.\\n    \\n  ];\\n\\n  # =========================================\\n  # External Drive Mount Template\\n  # =========================================\\n  # Uncomment and replace UUID / fsType to use\\n  # fileSystems.\\\"/mnt/external\\\" = {\\n  #   device = \\\"/dev/disk/by-uuid/UUID-hier.\\\";\\n  #   fsType = \\\"ntfs\\\"; # btrfs, ntfs, exfat, vfat, etc.\\n  #   options =[\\n  #     \\\"users\\\"\\n  #     \\\"nofail\\\"\\n  #     \\\"x-systemd.automount\\\"\\n  #     \\\"x-systemd.device-timeout=5s\\\"\\n  #   ];\\n  # };\\n}\\n"
     "f /home/niri-dank/.config/1-negro/niri-config.kdl 0664 niri-dank main - // Custom niri config. Jew.\\n"
     "d /home/niri-dank/.config/pandora 0755 niri-dank main - -"
     "f /home/niri-dank/.config/pandora/pandora.kdl 0664 niri-dank main - output \"*\" {\\n    image \"/home/niri-dank/Pictures/Wallpaper/muntan1.jpg\"\\n    mode \"scroll-vertical\"\\n}\\n\\nanimation {\\n    slowdown 2.0\\n}\\n"
