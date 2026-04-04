@@ -19,6 +19,10 @@
     "dark": "Transparent Prism",
   },
 
+  "auto_install_extensions": {
+    "transparent-prism": true,
+  },
+
   "context": "Workspace",
   "bindings": {
     "f5": "workspace::Reload",

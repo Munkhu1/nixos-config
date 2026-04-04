@@ -16,10 +16,10 @@
 
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [x] mouse follow scroll fix
+- [x] pandora wp
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
-- [ ] pandora wp
 - [ ] nvidia/amd driver shit
 - [ ] permanent external drive mount guide/ish
 - [ ] sddm customization
