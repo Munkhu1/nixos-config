@@ -276,7 +276,7 @@ spawn-at-startup "sh" "-c" "if [ -x ~/.config/1-negro/local-custom/autostart.sh 
 
 spawn-at-startup "sh" "-c" "PATH=$HOME/.local/bin:$PATH dms run"
 
-spawn-at-startup "sh" "-c" r#"sleep 1; OUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1); if[ -n "$OUT" ]; then sed -i -E 's|output "[^"]+"|output "'"$OUT"'"|' ~/.config/pandora/pandora.kdl; fi; rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null; pandora"#
+spawn-at-startup "bash" "-c" r#"sleep 1; OUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1); if [ -n "$OUT" ]; then sed -i -E 's|output "[^"]+"|output "'"$OUT"'"|' "$HOME/.config/pandora/pandora.kdl"; fi; rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null; pandora"#
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
