@@ -215,7 +215,7 @@ in
       eza tmux capitaine-cursors zed-editor obsidian
       pixel-sddm
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
-      inputs.zen-browser.packages.${pkgs.system}.default
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # alias
 
@@ -432,7 +432,7 @@ in
     packages = with pkgs;[
       matugen swww wl-clipboard cliphist grim slurp jq brightnessctl
       playerctl libnotify swappy cava libqalculate
-      inputs.mangowm.packages.${pkgs.system}.default
+      inputs.mangowm.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };
 }
