@@ -207,8 +207,8 @@ git commit -m "hardware config upload" || true
 
 echo "building"
 nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd \
-  --option extra-substituters "https://attic.xuyh0120.win/lantian https://nix-community.cachix.org" \
-  --option extra-trusted-public-keys "lantian:EeAUQ+W+
+  --option extra-substituters "https://attic.xuyh0120.win/lantian https://cache.garnix.io https://nix-community.cachix.org" \
+  --option extra-trusted-public-keys "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
 
 echo "permisioh"
 nixos-enter --root /mnt -c "chown -R niri-dank:main /etc/nixos"
