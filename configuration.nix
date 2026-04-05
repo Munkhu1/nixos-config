@@ -56,27 +56,60 @@ let
 
     installPhase = ''
       mkdir -p $out/share/sddm/themes/Pixel
+
+      # Fix QtGraphicalEffects for Wayland compatibility
       find . -type f -name "*.qml" -exec sed -i 's/QtGraphicalEffects/Qt5Compat.GraphicalEffects/g' {} +
 
-      cp -r * $out/share/sddm/themes/Pixel/
-
-      magick ${./sddm-wall/wallpaper.jpg} $out/share/sddm/themes/Pixel/my-wallpaper.png
-      DOMINANT_HEX=$(magick ${./sddm-wall/wallpaper.jpg} -scale 1x1\! -format "%[hex:u.p{0,0}]" info:)
+      # 1. Generate Image and Material palette
+      magick ${./sddm-wall/wallpaper.jpg} my-wallpaper.png
+      DOMINANT_HEX=$(magick my-wallpaper.png -scale 1x1\! -format "%[hex:u.p{0,0}]" info:)
       matugen color hex "#$DOMINANT_HEX" -j hex > palette.json
 
+      # 2. Extract specific Material 3 tokens from Matugen JSON
       ACCENT=$(jq -r '.colors.dark.primary' palette.json)
+      ON_ACCENT=$(jq -r '.colors.dark.on_primary' palette.json)
       SURFACE=$(jq -r '.colors.dark.surface' palette.json)
+      SURFACE_CONT=$(jq -r '.colors.dark.surface_container' palette.json)
       TEXT=$(jq -r '.colors.dark.on_surface' palette.json)
+      MUTED_TEXT=$(jq -r '.colors.dark.on_surface_variant' palette.json)
+      SECONDARY=$(jq -r '.colors.dark.secondary' palette.json)
+      BORDER=$(jq -r '.colors.dark.outline_variant' palette.json)
 
-      cat > $out/share/sddm/themes/Pixel/theme.conf.user <<EOF
-      [General]
-      Background="my-wallpaper.png"
-      background="my-wallpaper.png"
-      AccentColor="$ACCENT"
-      PrimaryColor="$ACCENT"
-      BackgroundColor="$SURFACE"
-      TextColor="$TEXT"
-      EOF
+      # 3. Aggressively patch the colors into the .qml source files using sed
+
+      # Main.qml
+      sed -i "s/readonly property color baseColor:.*/readonly property color baseColor: \"$SURFACE_CONT\"/" Main.qml
+      sed -i "s/readonly property color surfaceColor:.*/readonly property color surfaceColor: \"$SURFACE\"/" Main.qml
+      sed -i "s/readonly property color accentColor:.*/readonly property color accentColor: \"$ACCENT\"/" Main.qml
+      sed -i "s/readonly property color textColor:.*/readonly property color textColor: \"$TEXT\"/" Main.qml
+      sed -i "s/readonly property color mutedText:.*/readonly property color mutedText: \"$MUTED_TEXT\"/" Main.qml
+      sed -i "s/readonly property color fieldColor:.*/readonly property color fieldColor: \"$SURFACE_CONT\"/" Main.qml
+      sed -i "s/border.color: \"#3b2513\"/border.color: \"$BORDER\"/g" Main.qml
+      sed -i "s/color: \"#cccccc\"/color: \"$MUTED_TEXT\"/g" Main.qml
+
+      # AnalogBadge.qml
+      sed -i "s/property color accent:.*/property color accent: \"$ACCENT\"/" AnalogBadge.qml
+      sed -i "s/property color surface:.*/property color surface: \"$SURFACE_CONT\"/" AnalogBadge.qml
+      sed -i "s/property color minuteColor:.*/property color minuteColor: \"$SECONDARY\"/" AnalogBadge.qml
+
+      # PixelDots.qml
+      sed -i "s/property color dotColor:.*/property color dotColor: \"$TEXT\"/" PixelDots.qml
+      sed -i "s/property color animColor:.*/property color animColor: \"$ACCENT\"/" PixelDots.qml
+
+      # VirtualKeyboard.qml
+      sed -i "s/property color keyBgColor:.*/property color keyBgColor: \"$SURFACE_CONT\"/" VirtualKeyboard.qml
+      sed -i "s/property color funcBgColor:.*/property color funcBgColor: \"$SURFACE\"/" VirtualKeyboard.qml
+      sed -i "s/property color accentColor:.*/property color accentColor: \"$ACCENT\"/" VirtualKeyboard.qml
+      sed -i "s/property color accentTextColor:.*/property color accentTextColor: \"$ON_ACCENT\"/" VirtualKeyboard.qml
+      sed -i "s/property color textColor:.*/property color textColor: \"$TEXT\"/" VirtualKeyboard.qml
+      sed -i "s/color: \"#1e120a\"/color: \"$SURFACE\"/g" VirtualKeyboard.qml
+
+      # 4. Override the hardcoded background image directly inside the theme directory
+      mkdir -p assets
+      cp my-wallpaper.png assets/background.png
+
+      # 5. Move everything into the Nix store
+      cp -r * $out/share/sddm/themes/Pixel/
     '';
   };
 
