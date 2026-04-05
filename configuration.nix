@@ -30,7 +30,7 @@ let
       # -i[left|right]
       # -c [dark|light]
       # -s[1080p|2k|4k]
-      ./generate.sh -t forest -p window -i left -c dark -s 1080p
+      ./generate.sh -t mojave -p float -i left -c dark -s 1080p
     '';
 
     installPhase = ''
