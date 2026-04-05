@@ -24,7 +24,7 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] nvidia/amd driver shit
 - [x] permanent external drive mount guide/ish
 - [x] maybe dms config sync 
-- [ ] fucking tetrio for munkhochir
+- [x] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
 - [ ] sddm customization
