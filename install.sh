@@ -134,7 +134,7 @@ case $GPU_CHOICE in
     mapfile -t GPU_LIST < <(lspci | grep -iE 'VGA|3D')
 
     if [ ${#GPU_LIST[@]} -eq 0 ]; then
-    echo "⚠️ No GPUs found! Falling back to defaults."
+    echo "No GPUs found? Falling back to defaults."
     LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
     else
     echo "--------------------------------------------------------"
