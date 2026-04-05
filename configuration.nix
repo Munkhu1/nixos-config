@@ -12,21 +12,19 @@ let
       owner = "vinceliuice";
       repo = "Elegant-grub2-themes";
       rev = "main";
-      # We start with a fake hash. Nix will complain and give you the real one!
       hash = "sha256-fbZLWHxnLBrqBrS2MnM2G08HgEM2dmZvitiCERie0Cc=";
     };
 
     nativeBuildInputs =[ pkgs.bash ];
 
     postPatch = ''
-      # (Optional) Uncomment the line below to use your existing SDDM wallpaper
-      # instead of the theme's default background!
+      # (Optional) Uncomment the line below to use custom SDDM wp
       # cp ${./sddm-wall/wallpaper.jpg} background.jpg
     '';
 
     buildPhase = ''
       patchShebangs .
-      # Customize your theme options here based on the README's flags.
+      # Customize your options here.
       # -t [forest|mojave|mountain|wave]
       # -p [window|float|sharp|blur]
       # -i[left|right]
