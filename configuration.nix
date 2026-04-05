@@ -4,6 +4,46 @@ let
   # =========================================
   # Custom Derivations
   # =========================================
+  elegant-grub-theme = pkgs.stdenv.mkDerivation {
+    pname = "elegant-grub-theme";
+    version = "git";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "vinceliuice";
+      repo = "Elegant-grub2-themes";
+      rev = "main";
+      # We start with a fake hash. Nix will complain and give you the real one!
+      hash = "sha256-fbZLWHxnLBrqBrS2MnM2G08HgEM2dmZvitiCERie0Cc=";
+    };
+
+    nativeBuildInputs =[ pkgs.bash ];
+
+    postPatch = ''
+      # (Optional) Uncomment the line below to use your existing SDDM wallpaper
+      # instead of the theme's default background!
+      # cp ${./sddm-wall/wallpaper.jpg} background.jpg
+    '';
+
+    buildPhase = ''
+      patchShebangs .
+      # Customize your theme options here based on the README's flags.
+      # -t [forest|mojave|mountain|wave]
+      # -p [window|float|sharp|blur]
+      # -i[left|right]
+      # -c [dark|light]
+      # -s[1080p|2k|4k]
+      ./generate.sh -t forest -p window -i left -c dark -s 1080p
+    '';
+
+    installPhase = ''
+      mkdir -p $out
+      # generate.sh creates a named directory (e.g., Elegant-forest-window-left-dark).
+      # NixOS expects the `theme.txt` to be right at the root of the theme path,
+      # so we move the contents of that generated directory directly into $out.
+      cp -r Elegant-*/* $out/
+    '';
+  };
+
   pixel-sddm = pkgs.stdenv.mkDerivation {
     pname = "pixel-sddm";
     version = "1.0";
@@ -106,6 +146,13 @@ in
         efiSupport = true;
         device = "nodev";
         useOSProber = true;
+
+        # Apply your newly made theme here
+        theme = elegant-grub-theme;
+
+        # Tip: Set this to match your display to prevent squished assets
+        # (Translates to the GRUB_GFXMODE tweak mentioned in the README)
+        gfxmodeEfi = "auto";
       };
     };
   };
