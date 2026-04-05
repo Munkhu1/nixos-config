@@ -283,7 +283,7 @@ spawn-at-startup "bash" "-c" r#"sleep 1; OUT=$(niri msg outputs 2>/dev/null | gr
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
-    // skip-at-startup
+    skip-at-startup
 }
 
 // Uncomment this line to ask the clients to omit their client-side decorations if possible.
