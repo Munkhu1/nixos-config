@@ -129,7 +129,7 @@ case $GPU_CHOICE in
     LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-desktop.nix ]; }"
     ;;
   3)
-    echo "🔎 Scanning for GPUs..."
+    echo "lie detecting..."
 
     mapfile -t GPU_LIST < <(lspci | grep -iE 'VGA|3D')
 
