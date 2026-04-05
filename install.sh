@@ -166,7 +166,7 @@ case $GPU_CHOICE in
     INTEL_NIX=$(to_nix_pci "$INTEL_RAW")
     NVIDIA_NIX=$(to_nix_pci "$NVIDIA_RAW")
 
-    echo "✅ Generated Bus IDs -> Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
+    echo "Bus IDs -> Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
 
     LOCAL_HW_CONTENT="{
 imports = [ ./hardware-profiles/nvidia-laptop-intel.nix ];
