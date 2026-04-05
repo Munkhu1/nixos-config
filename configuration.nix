@@ -30,7 +30,7 @@ let
       # -i[left|right]
       # -c [dark|light]
       # -s[1080p|2k|4k]
-      ./generate.sh -t mojave -p float -i left -c dark -s 1080p
+      ./generate.sh -t mojave -p window -i left -c dark -s 1080p
     '';
 
     installPhase = ''
@@ -270,7 +270,7 @@ in
     systemPackages = with pkgs;[
       wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat
-      eza tmux capitaine-cursors zed-editor obsidian
+      eza tmux capitaine-cursors zed-editor obsidian thunar
       pixel-sddm
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
