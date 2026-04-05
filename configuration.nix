@@ -153,8 +153,6 @@ in
         useOSProber = false;
         configurationLimit = 1;
 
-        default = "saved";
-
         extraEntries = ''
           menuentry "Windows" --class windows --class os {
             savedefault   # <--- Tells GRUB to remember Windows if selected
