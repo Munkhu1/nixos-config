@@ -194,7 +194,7 @@ in
     };
     displayManager.sddm = {
       enable = true;
-      wayland.enable = false;
+      wayland.enable = true;
       theme = "Pixel";
       package = pkgs.kdePackages.sddm;
       extraPackages = with pkgs.kdePackages;[ qt5compat qtdeclarative qtsvg qtimageformats ];

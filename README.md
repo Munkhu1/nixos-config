@@ -26,10 +26,9 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] maybe dms config sync 
 - [x] fucking tetrio for munkhochir
 - [x] also rog control center
+- [x] grub menu looks dogshit.
 - [ ] munkhochir's dogshit mic
 - [ ] sddm customization
-- [ ] grub menu looks dogshit.
-- [ ] lockscreen might not work
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] special workspace
