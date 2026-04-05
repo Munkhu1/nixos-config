@@ -21,6 +21,8 @@
 
   "auto_install_extensions": {
     "dark-glass-theme": true,
+    "nix": true,
+    "kdl": true,
   },
 
   "context": "Workspace",
