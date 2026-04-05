@@ -23,6 +23,7 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] zeditor config symlink might not be working? gay.
 - [x] nvidia/amd driver shit
 - [x] permanent external drive mount guide/ish
+- [x] maybe dms config sync 
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
@@ -32,4 +33,3 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] special workspace
-- [ ] maybe dms config sync 
