@@ -10,7 +10,6 @@
     open = true;
     nvidiaSettings = true;
 
-    # 'latest' is heavily recommended for Wayland gaming over 'beta' right now
     package = config.boot.kernelPackages.nvidiaPackages.latest;
 
     prime = {
@@ -18,8 +17,7 @@
         enable = true;
         enableOffloadCmd = true;
       };
-      # Bus IDs are intentionally omitted here.
-      # They are dynamically detected and injected by install.sh
+      # Bus IDs are dynamically detected and injected by install.sh
     };
   };
 }

@@ -30,7 +30,7 @@ let
       # -i[left|right]
       # -c [dark|light]
       # -s[1080p|2k|4k]
-      ./generate.sh -t mojave -p window -i left -c dark -s 1080p
+      ./generate.sh -t mojave -p blur -i left -c dark -s 1080p
     '';
 
     installPhase = ''
@@ -149,13 +149,21 @@ in
         enable = true;
         efiSupport = true;
         device = "nodev";
-        useOSProber = true;
 
-        # Apply your newly made theme here
+        useOSProber = false;
+
+        configurationLimit = 1;
+
+        extraEntries = ''
+          menuentry "Windows" --class windows --class os {
+            insmod part_gpt
+            insmod fat
+            search --no-floppy --set=root --file /EFI/Microsoft/Boot/bootmgfw.efi
+            chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+          }
+        '';
+
         theme = elegant-grub-theme;
-
-        # Tip: Set this to match your display to prevent squished assets
-        # (Translates to the GRUB_GFXMODE tweak mentioned in the README)
         gfxmodeEfi = "auto";
       };
     };

@@ -10,7 +10,6 @@
     open = true;
     nvidiaSettings = true;
 
-    # Same here: latest has all the explicit sync features needed for Wayland
     package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
 
