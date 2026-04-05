@@ -25,7 +25,7 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] permanent external drive mount guide/ish
 - [x] maybe dms config sync 
 - [x] fucking tetrio for munkhochir
-- [ ] also rog control center
+- [x] also rog control center
 - [ ] munkhochir's dogshit mic
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
