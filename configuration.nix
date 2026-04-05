@@ -380,6 +380,8 @@ in
     "d /home/niri-dank/.config 0755 niri-dank main - -"
     "d /var/sddm-background 0777 root root -"
     "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
+    "d /home/niri-dank/.config/DankMaterialShell 0755 niri-dank main - -"
+    "C /home/niri-dank/.config/DankMaterialShell/settings.json 0664 niri-dank main - /etc/nixos/dotfiles/DankMaterialShell/settings.json"
     "f /home/niri-dank/.config/1-negro/nixos-config.nix 0664 niri-dank main - { config, pkgs, ... }:\\n{\\n  environment.systemPackages = with pkgs;[\\n    # Custom packages. Jew.\\n\\n  ];\\n\\n  # =========================================\\n  # External Drive Mount Template\\n  # =========================================\\n  # Uncomment and replace UUID to use\\n  # fileSystems.\\\"/mnt/Large\\\" = {\\n  #   device = \\\"/dev/disk/by-uuid/F674F18774F14B3F\\\";\\n  #   fsType = \\\"ntfs-3g\\\";\\n  #   options =[\\n  #     \\\"users\\\"\\n  #     \\\"nofail\\\"\\n  #     \\\"x-systemd.automount\\\"\\n  #     \\\"x-systemd.device-timeout=5s\\\"\\n  #\\n  #     # --- Permission Fixes ---\\n  #     \\\"uid=niri-dank\\\" # set owner to niri-dank \\n  #     \\\"gid=main\\\"      # set group to main \\n  #     \\\"rw\\\"            # read/write \\n  #     \\\"umask=0002\\\"    # give 'main' full write permissions (775/664)\\n  #   ];\\n  # };\\n}\\n"
     "f /home/niri-dank/.config/1-negro/niri-config.kdl 0664 niri-dank main - // Custom niri config. Jew.\\n"
     "d /home/niri-dank/.config/pandora 0755 niri-dank main - -"

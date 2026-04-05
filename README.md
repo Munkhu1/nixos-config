@@ -22,10 +22,10 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] pandora wp
 - [x] zeditor config symlink might not be working? gay.
 - [x] nvidia/amd driver shit
+- [x] permanent external drive mount guide/ish
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
-- [ ] permanent external drive mount guide/ish
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
 - [ ] lockscreen might not work
