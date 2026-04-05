@@ -138,7 +138,7 @@ in
     kernelModules =[ "i2c-dev" "i2c-piix4" "nct6775" ];
     loader = {
       systemd-boot.enable = false;
-      timeout = 5;
+      timeout = 1;
 
       efi = {
         canTouchEfiVariables = true;
@@ -151,11 +151,13 @@ in
         device = "nodev";
 
         useOSProber = false;
-
         configurationLimit = 1;
+
+        default = "saved";
 
         extraEntries = ''
           menuentry "Windows" --class windows --class os {
+            savedefault   # <--- Tells GRUB to remember Windows if selected
             insmod part_gpt
             insmod fat
             search --no-floppy --set=root --file /EFI/Microsoft/Boot/bootmgfw.efi
