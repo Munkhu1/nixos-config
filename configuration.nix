@@ -110,6 +110,12 @@ in
   # =========================================
   system.stateVersion = "23.11";
 
+  systemd.settings = {
+    Manager = {
+      DefaultTimeoutStopSec = "20s";
+    };
+  };
+
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages =[ "openssl-1.1.1w" ];
 

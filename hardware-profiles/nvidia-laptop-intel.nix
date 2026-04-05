@@ -7,7 +7,7 @@
     modesetting.enable = true;
     powerManagement.enable = true;
     powerManagement.finegrained = true; # turn off dgpu when not gaming
-    open = true;
+    open = false;
     nvidiaSettings = true;
 
     # 'latest' is heavily recommended for Wayland gaming over 'beta' right now
