@@ -13,4 +13,5 @@
       driversi686Linux.amdvlk
     ];
   };
+  programs.coolercontrol.enable = true;
 }

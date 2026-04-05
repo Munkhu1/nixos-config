@@ -21,4 +21,5 @@
     # Fixes flickering in some Electron apps on Nvidia Wayland
     NVD_BACKEND = "direct";
   };
+  programs.coolercontrol.enable = true;
 }

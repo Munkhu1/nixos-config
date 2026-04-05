@@ -220,7 +220,6 @@ in
       '';
     };
     starship.enable = true;
-    coolercontrol.enable = true;
     nh = {
       enable = true;
       flake = "/etc/nixos";
