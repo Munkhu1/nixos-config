@@ -21,10 +21,10 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] mouse follow scroll fix
 - [x] pandora wp
 - [x] zeditor config symlink might not be working? gay.
+- [x] nvidia/amd driver shit
 - [ ] fucking tetrio for munkhochir
 - [ ] also rog control center
 - [ ] munkhochir's dogshit mic
-- [ ] nvidia/amd driver shit
 - [ ] permanent external drive mount guide/ish
 - [ ] sddm customization
 - [ ] grub menu looks dogshit.
