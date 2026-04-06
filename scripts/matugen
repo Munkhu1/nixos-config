@@ -42,11 +42,18 @@ if [[ -n "$IMAGE" ]]; then
         fi
 
         # Restart Pandora
-        pandora stop-daemon 2>/dev/null
-        sleep 0.05
-        rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
-        pandora > /tmp/pandora-crash.log 2>&1 & disown
-        echo "Pandora restarted successfully." >> /tmp/matugen-wrapper.log
+            pandora stop-daemon 2>/dev/null
+            sleep 0.05
+            rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
+            pandora > /tmp/pandora-crash.log 2>&1 & disown
+            echo "Pandora restarted successfully." >> /tmp/matugen-wrapper.log
+        else
+            echo "Error: Path extracted ($IMAGE) but file does not exist on disk!" >> /tmp/matugen-wrapper.log
+        fi
+
+        # Generate the blurred background & apply it to backdrop
+        magick "$IMAGE" -resize 20% -blur 0x10 -resize 500% /tmp/overview-blur.jpg
+        swww img /tmp/overview-blur.jpg --transition-type none
     else
         echo "Error: Path extracted ($IMAGE) but file does not exist on disk!" >> /tmp/matugen-wrapper.log
     fi
@@ -55,4 +62,29 @@ else
 fi
 
 # Finally, execute actual Matugen
-exec /etc/profiles/per-user/niri-dank/bin/matugen "${ARGS[@]}"
+/etc/profiles/per-user/niri-dank/bin/matugen "${ARGS[@]}"
+# --- SYNC SDDM THEME ---
+if [[ -n "$IMAGE" ]] && [[ -f "$IMAGE" ]]; then
+    echo "Syncing SDDM wallpaper and colors..." >> /tmp/matugen-wrapper.log
+
+    # 1. Update the wallpaper
+    cp -f "$IMAGE" /var/sddm-background/wallpaper.jpg
+    chmod 666 /var/sddm-background/wallpaper.jpg
+
+    # 2. Use Matugen to generate Colors.qml specifically formatted for SDDM!
+    TEMPLATE="/run/current-system/sw/share/sddm/themes/ii-sddm-theme/SddmColors.qml"
+    if [ -f "$TEMPLATE" ]; then
+        cat << EOF > /tmp/sddm-matugen.toml
+[config]
+wallpaper_dir = "/tmp"
+[templates.sddm]
+input_path = "$TEMPLATE"
+output_path = "/var/sddm-background/Colors.qml"
+EOF
+        # Pipe 'yes' to auto-select the first color if Matugen prompts interactively
+        yes "" 2>/dev/null | /etc/profiles/per-user/niri-dank/bin/matugen --config /tmp/sddm-matugen.toml image "$IMAGE"
+        chmod 666 /var/sddm-background/Colors.qml
+    else
+        echo "Error: SDDM Template not found at $TEMPLATE" >> /tmp/matugen-wrapper.log
+    fi
+fi

@@ -42,74 +42,55 @@ let
     '';
   };
 
-  pixel-sddm = pkgs.stdenv.mkDerivation {
-    pname = "pixel-sddm";
-    version = "1.0";
+  ii-sddm-theme = pkgs.stdenv.mkDerivation {
+    pname = "ii-sddm-theme";
+    version = "git";
+
     src = pkgs.fetchFromGitHub {
-      owner = "mahaveergurjar";
-      repo = "sddm";
-      rev = "pixel";
-      hash = "sha256-bzA6WUZrXgQDJvOuK5JIcnPJNRhU/8AiKg3jgAeeoBM=";
+      owner = "3d3f";
+      repo = "ii-sddm-theme";
+      rev = "main";
+      hash = "sha256-uTCFZ4/QmXKWY/JjQB29v6tgJr8n/10xnbE9HUIRWF8=";
     };
 
-    nativeBuildInputs =[ pkgs.imagemagick pkgs.matugen pkgs.jq ];
+    nativeBuildInputs =[ pkgs.matugen pkgs.imagemagick ];
 
     installPhase = ''
-      mkdir -p $out/share/sddm/themes/Pixel
+        mkdir -p $out/share/sddm/themes/ii-sddm-theme
+        cp -r * $out/share/sddm/themes/ii-sddm-theme/
 
-      # Fix QtGraphicalEffects for Wayland compatibility
-      find . -type f -name "*.qml" -exec sed -i 's/QtGraphicalEffects/Qt5Compat.GraphicalEffects/g' {} +
+        cp Matugen/SddmColors.qml $out/share/sddm/themes/ii-sddm-theme/SddmColors.qml
+        cp -r noMatugen/* $out/share/sddm/themes/ii-sddm-theme/ 2>/dev/null || true
 
-      # 1. Generate Image and Material palette
-      magick ${./sddm-wall/wallpaper.jpg} my-wallpaper.png
-      DOMINANT_HEX=$(magick my-wallpaper.png -scale 1x1\! -format "%[hex:u.p{0,0}]" info:)
-      matugen color hex "#$DOMINANT_HEX" -j hex > palette.json
+        chmod -R +w $out/share/sddm/themes/ii-sddm-theme/
 
-      # 2. Extract specific Material 3 tokens from Matugen JSON
-      ACCENT=$(jq -r '.colors.dark.primary' palette.json)
-      ON_ACCENT=$(jq -r '.colors.dark.on_primary' palette.json)
-      SURFACE=$(jq -r '.colors.dark.surface' palette.json)
-      SURFACE_CONT=$(jq -r '.colors.dark.surface_container' palette.json)
-      TEXT=$(jq -r '.colors.dark.on_surface' palette.json)
-      MUTED_TEXT=$(jq -r '.colors.dark.on_surface_variant' palette.json)
-      SECONDARY=$(jq -r '.colors.dark.secondary' palette.json)
-      BORDER=$(jq -r '.colors.dark.outline_variant' palette.json)
+        rm -f $out/share/sddm/themes/ii-sddm-theme/Colors.qml
+        ln -s /var/sddm-background/Colors.qml $out/share/sddm/themes/ii-sddm-theme/Colors.qml
 
-      # 3. Aggressively patch the colors into the .qml source files using sed
+        mkdir -p $out/share/sddm/themes/ii-sddm-theme/Backgrounds
+        ln -sf /var/sddm-background/wallpaper.jpg $out/share/sddm/themes/ii-sddm-theme/Backgrounds/wallpaper.jpg
 
-      # Main.qml
-      sed -i "s/readonly property color baseColor:.*/readonly property color baseColor: \"$SURFACE_CONT\"/" Main.qml
-      sed -i "s/readonly property color surfaceColor:.*/readonly property color surfaceColor: \"$SURFACE\"/" Main.qml
-      sed -i "s/readonly property color accentColor:.*/readonly property color accentColor: \"$ACCENT\"/" Main.qml
-      sed -i "s/readonly property color textColor:.*/readonly property color textColor: \"$TEXT\"/" Main.qml
-      sed -i "s/readonly property color mutedText:.*/readonly property color mutedText: \"$MUTED_TEXT\"/" Main.qml
-      sed -i "s/readonly property color fieldColor:.*/readonly property color fieldColor: \"$SURFACE_CONT\"/" Main.qml
-      sed -i "s/border.color: \"#3b2513\"/border.color: \"$BORDER\"/g" Main.qml
-      sed -i "s/color: \"#cccccc\"/color: \"$MUTED_TEXT\"/g" Main.qml
+        if [ -f $out/share/sddm/themes/ii-sddm-theme/theme.conf ]; then
+        sed -i 's|^Background=.*|Background="Backgrounds/wallpaper.jpg"|' $out/share/sddm/themes/ii-sddm-theme/theme.conf
+        else
+        echo "[General]" > $out/share/sddm/themes/ii-sddm-theme/theme.conf
+        echo 'Background="Backgrounds/wallpaper.jpg"' >> $out/share/sddm/themes/ii-sddm-theme/theme.conf
+        fi
 
-      # AnalogBadge.qml
-      sed -i "s/property color accent:.*/property color accent: \"$ACCENT\"/" AnalogBadge.qml
-      sed -i "s/property color surface:.*/property color surface: \"$SURFACE_CONT\"/" AnalogBadge.qml
-      sed -i "s/property color minuteColor:.*/property color minuteColor: \"$SECONDARY\"/" AnalogBadge.qml
+        cat << EOF > matugen.toml
+[config]
+wallpaper_dir = "."
+[templates.sddm]
+input_path = "$out/share/sddm/themes/ii-sddm-theme/SddmColors.qml"
+output_path = "default-Colors.qml"
+EOF
 
-      # PixelDots.qml
-      sed -i "s/property color dotColor:.*/property color dotColor: \"$TEXT\"/" PixelDots.qml
-      sed -i "s/property color animColor:.*/property color animColor: \"$ACCENT\"/" PixelDots.qml
+        # Bypass the image prompt by just providing a hex color for the default fallback!
+        matugen --config matugen.toml color hex "#89b4fa"
+        cp default-Colors.qml $out/share/sddm/themes/ii-sddm-theme/default-Colors.qml
 
-      # VirtualKeyboard.qml
-      sed -i "s/property color keyBgColor:.*/property color keyBgColor: \"$SURFACE_CONT\"/" VirtualKeyboard.qml
-      sed -i "s/property color funcBgColor:.*/property color funcBgColor: \"$SURFACE\"/" VirtualKeyboard.qml
-      sed -i "s/property color accentColor:.*/property color accentColor: \"$ACCENT\"/" VirtualKeyboard.qml
-      sed -i "s/property color accentTextColor:.*/property color accentTextColor: \"$ON_ACCENT\"/" VirtualKeyboard.qml
-      sed -i "s/property color textColor:.*/property color textColor: \"$TEXT\"/" VirtualKeyboard.qml
-      sed -i "s/color: \"#1e120a\"/color: \"$SURFACE\"/g" VirtualKeyboard.qml
-
-      # 4. Override the hardcoded background image directly inside the theme directory
-      mkdir -p assets
-      cp my-wallpaper.png assets/background.png
-
-      # 5. Move everything into the Nix store
-      cp -r * $out/share/sddm/themes/Pixel/
+        mkdir -p $out/share/fonts/truetype
+        cp -r fonts/ii-sddm-theme-fonts/* $out/share/fonts/truetype/ 2>/dev/null || true
     '';
   };
 
@@ -228,9 +209,18 @@ in
     displayManager.sddm = {
       enable = true;
       wayland.enable = true;
-      theme = "Pixel";
+      theme = "ii-sddm-theme";
       package = pkgs.kdePackages.sddm;
-      extraPackages = with pkgs.kdePackages;[ qt5compat qtdeclarative qtsvg qtimageformats ];
+      extraPackages = with pkgs.kdePackages;[
+        qt5compat qtdeclarative qtsvg qtimageformats
+        qtvirtualkeyboard qtmultimedia
+      ];
+      settings = {
+        General = {
+          InputMethod = "qtvirtualkeyboard";
+          GreeterEnvironment = "QML2_IMPORT_PATH=${ii-sddm-theme}/share/sddm/themes/ii-sddm-theme/Components/,QT_IM_MODULE=qtvirtualkeyboard";
+        };
+      };
     };
     pipewire = {
       enable = true;
@@ -310,8 +300,8 @@ in
     systemPackages = with pkgs;[
       wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat
-      eza tmux capitaine-cursors zed-editor obsidian thunar
-      pixel-sddm
+      eza tmux capitaine-cursors zed-editor obsidian thunar swww imagemagick
+      ii-sddm-theme
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
@@ -459,6 +449,7 @@ in
       dejavu_fonts
       liberation_ttf
       twemoji-color-font
+      ii-sddm-theme
     ];
     fontconfig = {
       enable = true;
@@ -470,6 +461,8 @@ in
     "d /home/niri-dank 0700 niri-dank main - -"
     "d /home/niri-dank/.config 0755 niri-dank main - -"
     "d /var/sddm-background 0777 root root -"
+    "C /var/sddm-background/Colors.qml 0666 root root - ${ii-sddm-theme}/share/sddm/themes/ii-sddm-theme/default-Colors.qml"
+    "C /var/sddm-background/wallpaper.jpg 0666 root root - ${./sddm-wall/wallpaper.jpg}"
     "d /home/niri-dank/.config/1-negro 0775 niri-dank main - -"
     "d /home/niri-dank/.config/DankMaterialShell 0755 niri-dank main - -"
     "C /home/niri-dank/.config/DankMaterialShell/settings.json 0664 niri-dank main - /etc/nixos/dotfiles/DankMaterialShell/settings.json"

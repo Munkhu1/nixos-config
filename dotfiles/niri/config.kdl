@@ -354,10 +354,24 @@ window-rule {
     clip-to-geometry true
 }
 
+// overview {
+//   workspace-shadow {
+//     off
+//   }
+// }
+
 overview {
-  workspace-shadow {
-    off
-  }
+    workspace-shadow {
+        softness 200
+        spread 1024
+        offset x=0 y=0
+        color "#00000060"
+    }
+}
+
+layer-rule {
+    match namespace="^pandora$"
+    place-within-backdrop true
 }
 
 spawn-at-startup "easyeffects" "--gapplication-service"
@@ -384,10 +398,10 @@ window-rule {
     }
 }
 
-layer-rule {
-    match namespace="^pandora$"
-    place-within-backdrop true
-}
+// layer-rule {
+//     match namespace="^pandora$"
+//     place-within-backdrop true
+// }
 
 // include "~/.config/niri/custom.kdl"
 // include "~/.config/1-negro/niri-.kdl"
