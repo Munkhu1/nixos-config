@@ -2,6 +2,21 @@
 
 let
   # =========================================
+  # Dynamic GRUB Resolution
+  # =========================================
+  grubConfigFile = "/home/niri-dank/.config/1-negro/grub-config.conf";
+
+  # Read the file if it exists, otherwise fallback to 1920x1080
+  grubRes = if builtins.pathExists grubConfigFile
+            then lib.strings.trim (builtins.readFile grubConfigFile)
+            else "1920x1080";
+
+  # Map the raw resolution to the scale Elegant-GRUB expects
+  themeScale = if grubRes == "3840x2160" then "4k"
+               else if grubRes == "2560x1440" then "2k"
+               else "1080p";
+
+  # =========================================
   # Custom Derivations
   # =========================================
   elegant-grub-theme = pkgs.stdenv.mkDerivation {
@@ -30,7 +45,7 @@ let
       # -i[left|right]
       # -c [dark|light]
       # -s[1080p|2k|4k]
-      ./generate.sh -t mojave -p blur -i left -c dark -s 1080p
+      ./generate.sh -t mojave -p blur -i left -c dark -s ${themeScale}
     '';
 
     installPhase = ''
@@ -201,7 +216,7 @@ in
         '';
 
         theme = elegant-grub-theme;
-        gfxmodeEfi = "auto";
+        gfxmodeEfi = "${grubRes},auto";
       };
     };
   };

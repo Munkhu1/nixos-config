@@ -112,6 +112,16 @@ git clone "$REPO_URL" /mnt/etc/nixos
 echo "generating ur potato config"
 nixos-generate-config --root /mnt
 
+echo "detecting native resolution for grub..."
+DETECTED_RES=$(cat /sys/class/drm/*/modes 2>/dev/null | grep -Eo '^[0-9]+x[0-9]+' | head -n 1)
+if [ -z "$DETECTED_RES" ]; then
+  DETECTED_RES="1920x1080"
+fi
+echo "Resolution: $DETECTED_RES. eh, mid."
+
+mkdir -p /mnt/home/niri-dank/.config/1-negro
+echo "$DETECTED_RES" > /mnt/home/niri-dank/.config/1-negro/grub-config.conf
+
 echo "choose ur potato gpu"
 echo "1) AMD Desktop/Laptop"
 echo "2) Nvidia Desktop"
@@ -204,6 +214,7 @@ nixos-install --root /mnt --flake /mnt/etc/nixos#nixos --impure --no-root-passwd
 echo "permisioh"
 nixos-enter --root /mnt -c "chown -R niri-dank:main /etc/nixos"
 nixos-enter --root /mnt -c "chmod -R 2775 /etc/nixos"
+nixos-enter --root /mnt -c "chown -R niri-dank:main /home/niri-dank/.config/1-negro"
 
 echo "bolchloshd damn"
 echo "reboot YBJN"
