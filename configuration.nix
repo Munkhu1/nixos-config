@@ -205,6 +205,10 @@ in
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
+    # extraHosts = ''
+    #   140.82.113.3 github.com
+    #   140.82.113.3 api.github.com
+    # '';
   };
 
   time.timeZone = "Asia/Ulaanbaatar";
@@ -395,8 +399,8 @@ in
                 exit 1
             fi
         else
-            exec nh os switch /etc/nixos -- --impure "$@"
             echo "Baij bailda psda baas shidne shu..."
+            exec nh os switch /etc/nixos -- --impure "$@"
         fi
     '')
 
