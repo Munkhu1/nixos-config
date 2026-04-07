@@ -68,6 +68,8 @@ input {
     // Setting max-scroll-amount="0%" makes it work only on windows already fully on screen.
     focus-follows-mouse max-scroll-amount="0%"
     // focus-follows-mouse
+
+    workspace-auto-back-and-forth
 }
 
 // You can configure outputs by their name, which you can find
@@ -374,6 +376,12 @@ layer-rule {
     place-within-backdrop true
 }
 
+// Special workspace manoeuvre
+workspace "special"
+binds {
+    Mod+X { focus-workspace "special"; }
+}
+
 spawn-at-startup "easyeffects" "--gapplication-service"
 spawn-at-startup "zen"
 spawn-at-startup "vesktop"
@@ -388,7 +396,8 @@ window-rule {
 
 window-rule {
     match app-id=r#"^[vV]esktop$"#
-    open-on-workspace "2"
+    open-on-workspace "special"
+    open-focused false
 }
 
 window-rule {
