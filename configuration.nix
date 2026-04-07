@@ -201,7 +201,7 @@ in
         '';
 
         theme = elegant-grub-theme;
-        gfxmodeEfi = "1920x1080,auto";
+        gfxmodeEfi = "auto";
       };
     };
   };
