@@ -60,21 +60,46 @@ let
         cp -r * $out/share/sddm/themes/ii-sddm-theme/
 
         cp Matugen/SddmColors.qml $out/share/sddm/themes/ii-sddm-theme/SddmColors.qml
-        cp -r noMatugen/* $out/share/sddm/themes/ii-sddm-theme/ 2>/dev/null || true
+        cp Matugen/Settings.qml $out/share/sddm/themes/ii-sddm-theme/default-Settings.qml 2>/dev/null || true
 
+        if [ -f Matugen/theme.conf ]; then
+            cp Matugen/theme.conf $out/share/sddm/themes/ii-sddm-theme/theme.conf
+        fi
+
+        rm -rf $out/share/sddm/themes/ii-sddm-theme/{iiMatugen,noMatugen,Matugen,Previews}
         chmod -R +w $out/share/sddm/themes/ii-sddm-theme/
 
-        rm -f $out/share/sddm/themes/ii-sddm-theme/Colors.qml
-        ln -s /var/sddm-background/Colors.qml $out/share/sddm/themes/ii-sddm-theme/Colors.qml
+        find $out/share/sddm/themes/ii-sddm-theme -type f -name "*.qml" -exec sed -i 's|~/.config/ii-sddm-theme/|file:///var/sddm-background/|g' {} +
 
         mkdir -p $out/share/sddm/themes/ii-sddm-theme/Backgrounds
+        rm -f $out/share/sddm/themes/ii-sddm-theme/Backgrounds/background.*
+        rm -f $out/share/sddm/themes/ii-sddm-theme/Backgrounds/placeholder.*
         ln -sf /var/sddm-background/wallpaper.jpg $out/share/sddm/themes/ii-sddm-theme/Backgrounds/wallpaper.jpg
 
+        mkdir -p $out/share/sddm/themes/ii-sddm-theme/Components
+        rm -f $out/share/sddm/themes/ii-sddm-theme/Components/Colors.qml
+        rm -f $out/share/sddm/themes/ii-sddm-theme/Components/Settings.qml
+        ln -s /var/sddm-background/Colors.qml $out/share/sddm/themes/ii-sddm-theme/Components/Colors.qml
+        ln -s /var/sddm-background/Settings.qml $out/share/sddm/themes/ii-sddm-theme/Components/Settings.qml
+
         if [ -f $out/share/sddm/themes/ii-sddm-theme/theme.conf ]; then
-        sed -i 's|^Background=.*|Background="Backgrounds/wallpaper.jpg"|' $out/share/sddm/themes/ii-sddm-theme/theme.conf
+            sed -i 's|^Background=.*|Background="Backgrounds/wallpaper.jpg"|' $out/share/sddm/themes/ii-sddm-theme/theme.conf
+            sed -i 's|^BackgroundPlaceholder=.*|BackgroundPlaceholder=""|' $out/share/sddm/themes/ii-sddm-theme/theme.conf
         else
-        echo "[General]" > $out/share/sddm/themes/ii-sddm-theme/theme.conf
-        echo 'Background="Backgrounds/wallpaper.jpg"' >> $out/share/sddm/themes/ii-sddm-theme/theme.conf
+            echo "[General]" > $out/share/sddm/themes/ii-sddm-theme/theme.conf
+            echo 'Background="Backgrounds/wallpaper.jpg"' >> $out/share/sddm/themes/ii-sddm-theme/theme.conf
+        fi
+
+        if [ -f $out/share/sddm/themes/ii-sddm-theme/Themes/ii-sddm.conf ]; then
+            sed -i 's|^Background=.*|Background="Backgrounds/wallpaper.jpg"|' $out/share/sddm/themes/ii-sddm-theme/Themes/ii-sddm.conf
+            sed -i 's|^BackgroundPlaceholder=.*|BackgroundPlaceholder=""|' $out/share/sddm/themes/ii-sddm-theme/Themes/ii-sddm.conf
+        fi
+
+        if [ -f $out/share/sddm/themes/ii-sddm-theme/default-Settings.qml ]; then
+            sed -i 's|Backgrounds/background.png|Backgrounds/wallpaper.jpg|g' $out/share/sddm/themes/ii-sddm-theme/default-Settings.qml
+            sed -i 's|Backgrounds/placeholder.png||g' $out/share/sddm/themes/ii-sddm-theme/default-Settings.qml
+
+            sed -i 's|panelFamily: "ii"|panelFamily: "waffle"|g' $out/share/sddm/themes/ii-sddm-theme/default-Settings.qml
         fi
 
         cat << EOF > matugen.toml
@@ -84,8 +109,6 @@ wallpaper_dir = "."
 input_path = "$out/share/sddm/themes/ii-sddm-theme/SddmColors.qml"
 output_path = "default-Colors.qml"
 EOF
-
-        # Bypass the image prompt by just providing a hex color for the default fallback!
         matugen --config matugen.toml color hex "#89b4fa"
         cp default-Colors.qml $out/share/sddm/themes/ii-sddm-theme/default-Colors.qml
 
@@ -202,13 +225,14 @@ in
   };
 
   services = {
+    displayManager.defaultSession = "niri";
     xserver = {
       enable = true;
       # videoDrivers = [ "nvidia" ];
     };
     displayManager.sddm = {
       enable = true;
-      wayland.enable = true;
+      wayland.enable = false;
       theme = "ii-sddm-theme";
       package = pkgs.kdePackages.sddm;
       extraPackages = with pkgs.kdePackages;[
@@ -298,7 +322,7 @@ in
     sessionVariables.GTK_USE_PORTAL = "1";
 
     systemPackages = with pkgs;[
-      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus
+      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus matugen
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat
       eza tmux capitaine-cursors zed-editor obsidian thunar swww imagemagick
       ii-sddm-theme
@@ -470,6 +494,7 @@ in
     "f /home/niri-dank/.config/1-negro/niri-config.kdl 0664 niri-dank main - // Custom niri config. Jew.\\n"
     "d /home/niri-dank/.config/pandora 0755 niri-dank main - -"
     "f /home/niri-dank/.config/pandora/pandora.kdl 0664 niri-dank main - output \"*\" {\\n    image \"/home/niri-dank/Pictures/Wallpaper/muntan1.jpg\"\\n    mode \"scroll-vertical\"\\n}\\n\\nanimation {\\n    slowdown 2.0\\n}\\n"
+    "C /var/sddm-background/Settings.qml 0666 root root - ${ii-sddm-theme}/share/sddm/themes/ii-sddm-theme/default-Settings.qml"
   ];
 
   # =========================================

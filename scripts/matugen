@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
+# 1. Handle quick checks instantly
+if [[ "$1" == "--version" ]] || [[ "$1" == "-V" ]] || [[ "$1" == "--help" ]]; then
+    exec /run/current-system/sw/bin/matugen "$@"
+fi
+
 echo "=== $(date) ===" >> /tmp/matugen-wrapper.log
 echo "matugen called with: $@" >> /tmp/matugen-wrapper.log
 
 ARGS=("$@")
 IMAGE=""
 
-# 1. Check if an image was passed via arguments
+# 2. Check for image path
 while [[ $# -gt 0 ]]; do
     if [[ "$1" == "image" ]]; then
         IMAGE=$(realpath "$2")
@@ -16,75 +21,68 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# 2. Extract from JSON using built-in grep (no jq needed)
 if [[ -z "$IMAGE" ]]; then
     SESSION_FILE="$HOME/.local/state/DankMaterialShell/session.json"
-    echo "Checking DMS session file..." >> /tmp/matugen-wrapper.log
-
     if [[ -f "$SESSION_FILE" ]]; then
         IMAGE=$(grep -o '"wallpaperPath": *"[^"]*"' "$SESSION_FILE" | head -n 1 | awk -F'"' '{print $4}')
-        echo "Extracted path from JSON: $IMAGE" >> /tmp/matugen-wrapper.log
-    else
-        echo "Error: Session file not found at $SESSION_FILE" >> /tmp/matugen-wrapper.log
     fi
 fi
 
-# 3. Apply to Pandora if valid
-if [[ -n "$IMAGE" ]]; then
-    if [[ -f "$IMAGE" ]]; then
-        echo "File exists! Updating pandora.kdl..." >> /tmp/matugen-wrapper.log
-
-        sed -i -E 's|image "[^"]+"|image "'"$IMAGE"'"|' "$HOME/.config/pandora/pandora.kdl"
-
-        ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
-        if [[ -n "$ACTIVE_OUTPUT" ]]; then
-            sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' "$HOME/.config/pandora/pandora.kdl"
-        fi
-
-        # Restart Pandora
-            pandora stop-daemon 2>/dev/null
-            sleep 0.05
-            rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
-            pandora > /tmp/pandora-crash.log 2>&1 & disown
-            echo "Pandora restarted successfully." >> /tmp/matugen-wrapper.log
-        else
-            echo "Error: Path extracted ($IMAGE) but file does not exist on disk!" >> /tmp/matugen-wrapper.log
-        fi
-
-        # Generate the blurred background & apply it to backdrop
-        magick "$IMAGE" -resize 20% -blur 0x10 -resize 500% /tmp/overview-blur.jpg
-        swww img /tmp/overview-blur.jpg --transition-type none
-    else
-        echo "Error: Path extracted ($IMAGE) but file does not exist on disk!" >> /tmp/matugen-wrapper.log
-    fi
-else
-    echo "Error: IMAGE variable is still empty." >> /tmp/matugen-wrapper.log
-fi
-
-# Finally, execute actual Matugen
-/etc/profiles/per-user/niri-dank/bin/matugen "${ARGS[@]}"
-# --- SYNC SDDM THEME ---
+# 3. Apply to Pandora & SWWW (Silently redirecting everything to logs!)
 if [[ -n "$IMAGE" ]] && [[ -f "$IMAGE" ]]; then
-    echo "Syncing SDDM wallpaper and colors..." >> /tmp/matugen-wrapper.log
+    sed -i -E 's|image "[^"]+"|image "'"$IMAGE"'"|' "$HOME/.config/pandora/pandora.kdl"
+    ACTIVE_OUTPUT=$(niri msg outputs 2>/dev/null | grep -oE '\b(eDP|DP|HDMI-[A-Z]|Virtual|WL|VGA|DVI-[A-Z]|LVDS)-[0-9]+\b' | head -n 1)
+    if [[ -n "$ACTIVE_OUTPUT" ]]; then
+        sed -i -E 's|output "[^"]+"|output "'"$ACTIVE_OUTPUT"'"|' "$HOME/.config/pandora/pandora.kdl"
+    fi
 
-    # 1. Update the wallpaper
-    cp -f "$IMAGE" /var/sddm-background/wallpaper.jpg
+    pandora stop-daemon >> /tmp/matugen-wrapper.log 2>&1
+    sleep 0.05
+    rm -f /tmp/pandora*.sock /run/user/$(id -u)/pandora*.sock 2>/dev/null
+    pandora > /tmp/pandora-crash.log 2>&1 & disown
+
+    magick "$IMAGE" -resize 20% -blur 0x10 -resize 500% /tmp/overview-blur.jpg >> /tmp/matugen-wrapper.log 2>&1
+    swww img /tmp/overview-blur.jpg --transition-type none >> /tmp/matugen-wrapper.log 2>&1
+fi
+
+# 4. RUN REAL MATUGEN (This is the ONLY thing allowed to write to stdout!)
+/run/current-system/sw/bin/matugen "${ARGS[@]}"
+REAL_EXIT_CODE=$?
+echo "Real matugen exited with code: $REAL_EXIT_CODE" >> /tmp/matugen-wrapper.log
+
+# 5. SYNC SDDM
+if [[ -n "$IMAGE" ]] && [[ -f "$IMAGE" ]]; then
+    echo "Syncing SDDM..." >> /tmp/matugen-wrapper.log
+
+    # REMOVE first so the user takes ownership of the new file
+    rm -f /var/sddm-background/wallpaper.jpg
+    cp "$IMAGE" /var/sddm-background/wallpaper.jpg
     chmod 666 /var/sddm-background/wallpaper.jpg
 
-    # 2. Use Matugen to generate Colors.qml specifically formatted for SDDM!
     TEMPLATE="/run/current-system/sw/share/sddm/themes/ii-sddm-theme/SddmColors.qml"
     if [ -f "$TEMPLATE" ]; then
         cat << EOF > /tmp/sddm-matugen.toml
 [config]
 wallpaper_dir = "/tmp"
+
 [templates.sddm]
 input_path = "$TEMPLATE"
 output_path = "/var/sddm-background/Colors.qml"
 EOF
-        # Pipe 'yes' to auto-select the first color if Matugen prompts interactively
-        yes "" 2>/dev/null | /etc/profiles/per-user/niri-dank/bin/matugen --config /tmp/sddm-matugen.toml image "$IMAGE"
-        chmod 666 /var/sddm-background/Colors.qml
-    else
-        echo "Error: SDDM Template not found at $TEMPLATE" >> /tmp/matugen-wrapper.log
+
+        # Remove old colors file
+        rm -f /var/sddm-background/Colors.qml
+
+        # GUARANTEED FIX: Use a hex color to generate the palette silently instead of parsing the image interactively
+        /run/current-system/sw/bin/matugen --config /tmp/sddm-matugen.toml color hex "#89b4fa" >> /tmp/matugen-wrapper.log 2>&1
+
+        # If Matugen successfully created the file, set permissions
+        if [ -f /var/sddm-background/Colors.qml ]; then
+            chmod 666 /var/sddm-background/Colors.qml
+        else
+            echo "Matugen failed to generate Colors.qml" >> /tmp/matugen-wrapper.log
+        fi
     fi
 fi
+
+exit $REAL_EXIT_CODE
