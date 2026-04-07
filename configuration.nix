@@ -221,6 +221,15 @@ in
   };
 
   services = {
+    libinput = {
+      enable = true;
+      mouse = {
+        accelProfile = "flat";
+      };
+      touchpad = {
+        accelProfile = "flat";
+      };
+    };
     displayManager.defaultSession = "niri";
     xserver = {
       enable = true;
@@ -250,6 +259,20 @@ in
         Xcursor.theme: capitaine-cursors-white
         Xcursor.size: 24
         EOF
+
+        ${pkgs.xorg.xrandr}/bin/xrandr | ${pkgs.gawk}/bin/awk '
+          / connected/ {
+            out = $1
+            getline
+            res = $1
+            max = 0
+            for (i=2; i<=NF; i++) {
+              val = $i + 0
+              if (val > max) max = val
+            }
+            system("${pkgs.xorg.xrandr}/bin/xrandr --output " out " --mode " res " --rate " max)
+          }
+        '
       '';
     };
     pipewire = {
