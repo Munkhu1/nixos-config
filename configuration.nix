@@ -355,7 +355,7 @@ in
     sessionVariables.GTK_USE_PORTAL = "1";
 
     systemPackages = with pkgs;[
-      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus matugen
+      wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus matugen xwayland-satellite
       obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat btop
       eza tmux capitaine-cursors zed-editor obsidian thunar swww imagemagick
       ii-sddm-theme
