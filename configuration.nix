@@ -132,28 +132,9 @@ EOF
     '';
   };
 
-  inir-quickshell = pkgs.stdenv.mkDerivation {
-    pname = "inir-quickshell";
-    version = "custom";
-    dontUnpack = true;
-
-    nativeBuildInputs = [ pkgs.kdePackages.wrapQtAppsHook ];
-    buildInputs = with pkgs.kdePackages;[
-      kirigami kirigami-addons qtmultimedia qtdeclarative
-      syntax-highlighting plasma-integration qtimageformats
-      qtwayland qt5compat qtsvg
-    ];
-
-    installPhase = ''
-      mkdir -p $out/bin
-      cp -a ${pkgs.quickshell}/bin/* $out/bin/
-    '';
-  };
-
 in
 {
   imports =[
-        inputs.mangowm.nixosModules.mango
       ] ++ lib.optional (builtins.pathExists /home/niri-dank/.config/1-negro/nixos-config.nix) /home/niri-dank/.config/1-negro/nixos-config.nix
         ++ lib.optional (builtins.pathExists ./local-hardware.nix) ./local-hardware.nix;
 
@@ -252,14 +233,24 @@ in
       package = pkgs.kdePackages.sddm;
       extraPackages = with pkgs.kdePackages;[
         qt5compat qtdeclarative qtsvg qtimageformats
-        qtvirtualkeyboard qtmultimedia
+        qtvirtualkeyboard qtmultimedia pkgs.capitaine-cursors
       ];
       settings = {
+        Theme = {
+          CursorTheme = "capitaine-cursors-white";
+          CursorSize = 24;
+        };
         General = {
           InputMethod = "qtvirtualkeyboard";
           GreeterEnvironment = "QML2_IMPORT_PATH=${ii-sddm-theme}/share/sddm/themes/ii-sddm-theme/Components/,QT_IM_MODULE=qtvirtualkeyboard";
         };
       };
+      setupScript = ''
+        ${pkgs.xorg.xrdb}/bin/xrdb -merge - <<EOF
+        Xcursor.theme: capitaine-cursors-white
+        Xcursor.size: 24
+        EOF
+      '';
     };
     pipewire = {
       enable = true;
@@ -276,12 +267,10 @@ in
   # Programs & Environment
   # =========================================
   programs = {
-    mango.enable = true;
     niri = {
           enable = true;
-          package = pkgs.niri-unstable; # Tell NixOS to use the blur fork
+          package = pkgs.niri-unstable; # blur fork
         };
-    hyprland.enable = true;
     dconf.enable = true;
     fish = {
       enable = true;
@@ -518,54 +507,16 @@ in
   users.groups.main = {};
 
   users.users."niri-dank" = {
-      isNormalUser = true;
-      initialPassword = "Minecraft172";
-      extraGroups =[ "wheel" "main" "video" "audio" "networkmanager" ];
-      shell = pkgs.fish;
-      packages = with pkgs;[
-        tree
-        wl-clipboard
-        playerctl
-        brightnessctl
-        hyprpicker
-      ];
-    };
-
-  users.users."niri-noctalia" = {
     isNormalUser = true;
-    extraGroups =[ "wheel" "main" "video" "audio" "networkmanager" ];
-    shell = pkgs.fish;
-    packages = with pkgs; [ tree playerctl hyprpicker wl-clipboard brightnessctl ];
-  };
-
-  users.users."niri-inir" = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "main" "video" "audio" "networkmanager" ];
-    shell = pkgs.fish;
-    packages = with pkgs;[
-      inir-quickshell wl-clipboard cliphist grim slurp matugen fuzzel swww
-      (runCommand "awww-alias" {} ''
-        mkdir -p $out/bin
-        ln -s ${pkgs.swww}/bin/swww $out/bin/awww
-        ln -s ${pkgs.swww}/bin/swww-daemon $out/bin/awww-daemon
-      '')
-      jq bc ripgrep curl rsync libnotify imagemagick playerctl brightnessctl
-      libqalculate translate-shell cava swappy tesseract wtype ydotool wlsunset
-      gsettings-desktop-schemas procps coreutils findutils glib
-      kdePackages.kconfig ddcutil xdg-utils yt-dlp deno mpv swayidle wf-recorder
-      socat fprintd kdePackages.kdialog
-      (python3.withPackages (ps: with ps; [ evdev pillow ]))
-    ];
-  };
-
-  users.users."mango-dank" = {
-    isNormalUser = true;
+    initialPassword = "Minecraft172";
     extraGroups =[ "wheel" "main" "video" "audio" "networkmanager" ];
     shell = pkgs.fish;
     packages = with pkgs;[
-      matugen swww wl-clipboard cliphist grim slurp jq brightnessctl
-      playerctl libnotify swappy cava libqalculate
-      inputs.mangowm.packages.${pkgs.stdenv.hostPlatform.system}.default
+      tree
+      wl-clipboard
+      playerctl
+      brightnessctl
+      hyprpicker
     ];
   };
 }
