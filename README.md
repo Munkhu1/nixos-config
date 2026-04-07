@@ -13,6 +13,9 @@
 
 6. `reboot`
 
+###### For laptop gang with nvidia gpu:
+
+set `nvidia-offload %command%` in steam game properties so skibidi sigma hawk tuah 67 69 slay.
 # To-do
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [x] mouse follow scroll fix
