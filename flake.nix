@@ -29,6 +29,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
@@ -64,8 +69,13 @@
           # ==========================================
           # USER 1: niri-dank (Dank Material Shell)
           # ==========================================
-          home-manager.users.niri-dank = { config, pkgs, lib, ... }: {
-            imports =[ dms.homeModules.dank-material-shell ];
+          home-manager.users.niri-dank = { config, pkgs, lib, ... }: let
+            spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
+          in {
+            imports =[
+              dms.homeModules.dank-material-shell
+              inputs.spicetify-nix.homeManagerModules.default
+            ];
             home.stateVersion = "23.11";
             programs.dank-material-shell.enable = true;
 
@@ -80,6 +90,18 @@
               gtk4.theme = null;
             };
 
+            programs.spicetify = {
+              enable = true;
+              theme = spicePkgs.themes.catppuccin;
+              colorScheme = "mocha";
+
+              # spicetify extensions
+              enabledExtensions = with spicePkgs.extensions;[
+                adblockify
+                hidePodcasts
+                shuffle
+              ];
+            };
             # wallpaper script symlink
             home.sessionPath =[ "$HOME/.local/bin" ];
             home.file.".local/bin/matugen".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/scripts/matugen";
