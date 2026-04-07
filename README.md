@@ -13,9 +13,6 @@
 
 6. `reboot`
 
-### Hardware config
-Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which shall be put in 
-
 # To-do
 - [x] cachyos kernel switch to satisfy munkhochir/more fps
 - [x] mouse follow scroll fix
@@ -28,7 +25,7 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] also rog control center
 - [x] grub menu looks dogshit.
 - [x] sddm customization
-- [ ] grub scale
+- [x] grub scale
 - [ ] munkhochir's dogshit mic
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)

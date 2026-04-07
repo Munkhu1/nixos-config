@@ -260,6 +260,8 @@ in
         Xcursor.size: 24
         EOF
 
+        ${pkgs.xorg.xset}/bin/xset m 0 0
+
         ${pkgs.xorg.xrandr}/bin/xrandr | ${pkgs.gawk}/bin/awk '
           / connected/ {
             out = $1
