@@ -79,6 +79,14 @@
             home.stateVersion = "23.11";
             programs.dank-material-shell.enable = true;
 
+            home.pointerCursor = {
+              name = "capitaine-cursors-white";
+              package = pkgs.capitaine-cursors;
+              size = 24;
+              gtk.enable = true;
+              x11.enable = true;
+            };
+
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
             gtk = {
