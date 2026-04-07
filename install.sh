@@ -37,7 +37,7 @@ elif [ "$#" -eq 2 ]; then
   fi
   MODE="PARTITION"
 else
-  echo "❌ Invalid usage."
+  echo "Invalid usage. u slow?"
   echo "--------------------------------------------------------"
   echo "Option 1: Whole Disk Wipe (1 Argument)"
   echo "  Usage: sudo ./install.sh <DRIVE>"
@@ -126,10 +126,11 @@ echo "choose ur potato gpu"
 echo "1) AMD Desktop/Laptop"
 echo "2) Nvidia Desktop"
 echo "3) Nvidia Laptop (Intel + Nvidia Optimus)"
-echo "4) don't do it. trust."
-read -p "Type 1, 2 or 3. not 4.: " GPU_CHOICE
+echo "4) Nvidia Laptop (AMD + Nvidia Optimus)"
+echo "5) don't do it. trust."
+read -p "Type 1, 2, 3 or 4. not 5.: " GPU_CHOICE
 
-LOCAL_HW_CONTENT="{ imports = [ ]; }"
+LOCAL_HW_CONTENT="{ imports =[ ]; }"
 
 case $GPU_CHOICE in
   1)
@@ -138,51 +139,63 @@ case $GPU_CHOICE in
   2)
     LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-desktop.nix ]; }"
     ;;
-  3)
+  3|4)
     echo "lie detecting..."
 
     mapfile -t GPU_LIST < <(lspci | grep -iE 'VGA|3D')
 
     if [ ${#GPU_LIST[@]} -eq 0 ]; then
-    echo "No GPUs found? Falling back to defaults."
-    LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
-    else
-    echo "--------------------------------------------------------"
-    for i in "${!GPU_LIST[@]}"; do
-        echo "$((i+1))) ${GPU_LIST[$i]}"
-    done
-    echo "--------------------------------------------------------"
-
-    read -p "which one's INTEL (iGPU)?: " igpu_num
-    read -p "which one's NVIDIA (dGPU): " dgpu_num
-
-    # raw PCI ID strings (0000:00:02.0 or 00:02.0)
-    INTEL_RAW=$(echo "${GPU_LIST[$((igpu_num-1))]}" | awk '{print $1}')
-    NVIDIA_RAW=$(echo "${GPU_LIST[$((dgpu_num-1))]}" | awk '{print $1}')
-
-    to_nix_pci() {
-        local pci="$1"
-        if [[ "$pci" == *":"*":"* ]]; then
-        pci=$(echo "$pci" | cut -d: -f2,3)
+        echo "No GPUs found? Falling back to defaults."
+        if [ "$GPU_CHOICE" -eq 3 ]; then
+            LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ]; }"
+        else
+            LOCAL_HW_CONTENT="{ imports =[ ./hardware-profiles/nvidia-laptop-amd.nix ]; }"
         fi
+    else
+        echo "--------------------------------------------------------"
+        for i in "${!GPU_LIST[@]}"; do
+            echo "$((i+1))) ${GPU_LIST[$i]}"
+        done
+        echo "--------------------------------------------------------"
 
-        local bus=$(echo "$pci" | cut -d: -f1)
-        local dev=$(echo "$pci" | cut -d: -f2 | cut -d. -f1)
-        local func=$(echo "$pci" | cut -d. -f2)
+        read -p "which one's iGPU (Integrated)?: " igpu_num
+        read -p "which one's NVIDIA (dGPU): " dgpu_num
 
-        printf "PCI:%d:%d:%d" "$((16#$bus))" "$((16#$dev))" "$((16#$func))"
-    }
+        # raw PCI ID strings (0000:00:02.0 or 00:02.0)
+        IGPU_RAW=$(echo "${GPU_LIST[$((igpu_num-1))]}" | awk '{print $1}')
+        NVIDIA_RAW=$(echo "${GPU_LIST[$((dgpu_num-1))]}" | awk '{print $1}')
 
-    INTEL_NIX=$(to_nix_pci "$INTEL_RAW")
-    NVIDIA_NIX=$(to_nix_pci "$NVIDIA_RAW")
+        to_nix_pci() {
+            local pci="$1"
+            if [[ "$pci" == *":"*":"* ]]; then
+            pci=$(echo "$pci" | cut -d: -f2,3)
+            fi
 
-    echo "Bus IDs -> Intel: $INTEL_NIX | Nvidia: $NVIDIA_NIX"
+            local bus=$(echo "$pci" | cut -d: -f1)
+            local dev=$(echo "$pci" | cut -d: -f2 | cut -d. -f1)
+            local func=$(echo "$pci" | cut -d. -f2)
 
-    LOCAL_HW_CONTENT="{
-imports = [ ./hardware-profiles/nvidia-laptop-intel.nix ];
-hardware.nvidia.prime.intelBusId = \"$INTEL_NIX\";
-hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
+            printf "PCI:%d:%d:%d" "$((16#$bus))" "$((16#$dev))" "$((16#$func))"
+        }
+
+        IGPU_NIX=$(to_nix_pci "$IGPU_RAW")
+        NVIDIA_NIX=$(to_nix_pci "$NVIDIA_RAW")
+
+        echo "Bus IDs -> iGPU: $IGPU_NIX | Nvidia: $NVIDIA_NIX"
+
+        if [ "$GPU_CHOICE" -eq 3 ]; then
+            LOCAL_HW_CONTENT="{
+  imports =[ ./hardware-profiles/nvidia-laptop-intel.nix ];
+  hardware.nvidia.prime.intelBusId = \"$IGPU_NIX\";
+  hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
 }"
+        else
+            LOCAL_HW_CONTENT="{
+  imports =[ ./hardware-profiles/nvidia-laptop-amd.nix ];
+  hardware.nvidia.prime.amdgpuBusId = \"$IGPU_NIX\";
+  hardware.nvidia.prime.nvidiaBusId = \"$NVIDIA_NIX\";
+}"
+        fi
     fi
     ;;
   *)
