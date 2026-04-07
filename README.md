@@ -27,9 +27,9 @@ Ask me WITH the contents of `nix shell nixpkgs#lshw -c lshw -c display`. Which s
 - [x] fucking tetrio for munkhochir
 - [x] also rog control center
 - [x] grub menu looks dogshit.
+- [x] sddm customization
 - [ ] grub scale
 - [ ] munkhochir's dogshit mic
-- [ ] sddm customization
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
 - [ ] special workspace
