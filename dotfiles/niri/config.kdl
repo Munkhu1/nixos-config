@@ -377,7 +377,16 @@ layer-rule {
 }
 
 // Special workspace manoeuvre
+workspace "1"
+workspace "2"
+workspace "3"
+workspace "4"
+workspace "5"
+workspace "6"
+workspace "7"
+workspace "8"
 workspace "9"
+
 binds {
     Mod+X { focus-workspace "9"; }
 }
@@ -385,9 +394,6 @@ binds {
 spawn-at-startup "easyeffects" "--gapplication-service"
 spawn-at-startup "zen"
 spawn-at-startup "vesktop"
-
-workspace "1"
-workspace "2"
 
 window-rule {
     match app-id=r#"^zen.*"#
