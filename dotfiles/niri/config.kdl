@@ -377,9 +377,9 @@ layer-rule {
 }
 
 // Special workspace manoeuvre
-workspace "special"
+workspace "9"
 binds {
-    Mod+X { focus-workspace "special"; }
+    Mod+X { focus-workspace "9"; }
 }
 
 spawn-at-startup "easyeffects" "--gapplication-service"
@@ -396,7 +396,7 @@ window-rule {
 
 window-rule {
     match app-id=r#"^[vV]esktop$"#
-    open-on-workspace "special"
+    open-on-workspace "9"
     open-focused false
 }
 
