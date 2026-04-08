@@ -32,6 +32,7 @@ set `nvidia-offload %command%` in steam game properties so skibidi sigma hawk tu
 - [x] special workspace
 - [ ] timezone
 - [ ] steam compatdata
+- [ ] coolercontrol startup
 - [ ] munkhochir's dogshit mic
 - [ ] diabolical keybind list organize
 - [ ] test installation script on the same drive with windows, (might fuck windows boot partition)
