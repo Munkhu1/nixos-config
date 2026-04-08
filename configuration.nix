@@ -356,7 +356,7 @@ in
 
     systemPackages = with pkgs;[
       wget git kitty vesktop sublime4 yazi pavucontrol easyeffects starship nautilus matugen xwayland-satellite
-      obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat btop
+      obs-studio obsidian steam gnome-disk-utility hyprpolkitagent qdirstat btop libreoffice
       eza tmux capitaine-cursors zed-editor obsidian thunar swww imagemagick
       ii-sddm-theme
       kdePackages.qtwayland kdePackages.qtsvg kdePackages.qtdeclarative kdePackages.qt5compat
